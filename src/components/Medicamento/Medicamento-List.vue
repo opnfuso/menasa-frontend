@@ -1,3 +1,3 @@
-<template></template>
-
-<script lang="ts"></script>
+<template>
+  <h1>hola</h1>
+</template>
