@@ -1,11 +1,13 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, { type AxiosInstance } from "axios";
+import * as dotenv from "dotenv";
 
- const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/api',
-    headers: {
-        'Content-Type': 'application/json',
-        
-    }
+dotenv.config();
+
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: process.env.API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 export default axiosInstance;
