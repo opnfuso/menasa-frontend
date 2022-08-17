@@ -1,3 +1,3 @@
 <template>
-    <h1>inventario form</h1>
+  <h1>inventario form</h1>
 </template>
