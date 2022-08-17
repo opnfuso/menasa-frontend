@@ -5,10 +5,10 @@ interface lotes {
   lote: string;
 }
 
-export interface inventario {
+export default interface Inventario {
   _id: string;
   observaciones: string;
   piezas: number;
   id_medicamento: string;
-  lostes: Array<lotes>;
+  lotes: Array<lotes>;
 }

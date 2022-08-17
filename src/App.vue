@@ -1,15 +1,13 @@
 <template>
-  <!-- <html class="white">
+  <main class="bg-base-200 h-fit min-h-screen">
     <NavBar />
-  </html> -->
-  <div id="app">
     <router-view></router-view>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import NavBar from "./Nav-bar.vue";
+import NavBar from "./NavBar.vue";
 
 export default defineComponent({
   name: "App",
