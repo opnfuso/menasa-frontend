@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
     name: "inventario-detail",
     component: () => import("@/components/Inventario/InventarioDetail.vue"),
   },
+  {
+    path: "/lista-precios",
+    name: "lista de precios",
+    component: () => import("@/components/Medicamento/MedicamentoDetail.vue"),
+  },
 ];
 
 const router = createRouter({
