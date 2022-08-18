@@ -9,9 +9,14 @@
     >
       <div class="card-body">
         <h2 class="card-title">Inventario</h2>
-        <p>{{ inventario.piezas }}</p>
+        <p>Medicamento: {{ inventario.id_medicamento.nombre }}</p>
         <div class="card-actions">
-          <button class="btn btn-primary">Editar</button>
+          <button
+            class="btn btn-primary"
+            @click="$router.push(`/inventario/${inventario._id}`)"
+          >
+            Editar
+          </button>
         </div>
       </div>
     </div>
@@ -32,9 +37,12 @@ export default defineComponent({
   },
   methods: {
     async loadInventarios() {
-      const response = await getInventarios();
-      console.log(response);
-      this.inventarios = response.data;
+      try {
+        const response = await getInventarios();
+        this.inventarios = response.data;
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   mounted() {

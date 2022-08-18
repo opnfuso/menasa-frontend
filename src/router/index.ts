@@ -18,8 +18,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/components/Inventario/InventarioDetail.vue"),
   },
   {
-    path: "/lista-precios",
-    name: "lista de precios",
+    path: "/medicamento",
+    name: "medicamento",
     component: () => import("@/components/Medicamento/MedicamentoDetail.vue"),
   },
 ];

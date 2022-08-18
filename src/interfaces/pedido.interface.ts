@@ -1,20 +1,18 @@
-interface inventario {
-  id: string;
-}
+import type Inventario from "./inventario.interface";
 
-interface medicamento {
+interface Medicamento {
   piezas: number;
   precio_maximo: number;
   precio_sugerido: number;
   descuento: number;
   precio_total: number;
-  id_inventario: Array<inventario>;
+  id_inventario: Inventario[];
 }
 
-export interface pedido {
+export default interface Pedido {
   _id: string;
   cliente: string;
   completado: boolean;
   fecha_salida: Date;
-  medicamentos: Array<medicamento>;
+  medicamentos: Medicamento[];
 }
