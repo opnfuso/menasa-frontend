@@ -4,3 +4,7 @@ import axios from "./axios";
 
 export const getInventarios = async (): Promise<AxiosResponse<Inventario[]>> =>
   await axios.get("/inventario");
+
+export const getInventario = async (
+  id: string
+): Promise<AxiosResponse<Inventario>> => await axios.get(`/inventario/${id}`);

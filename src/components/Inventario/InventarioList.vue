@@ -8,7 +8,7 @@
       :key="index"
     >
       <div class="card-body">
-        <h2 class="card-title">Pedido</h2>
+        <h2 class="card-title">Inventario</h2>
         <p>{{ inventario.observaciones }}</p>
         <div class="card-actions">
           <button class="btn btn-primary">Editar</button>
