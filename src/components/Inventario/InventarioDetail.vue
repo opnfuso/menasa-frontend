@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
-      <h2 class="text-2xl font-semibold mb-4">Inventario</h2>
+      <h2 class="text-2xl font-semibold mb-4">Información</h2>
       <div class="mb-4 grid grid-cols-1 gap-4">
         <div class="flex flex-col">
           <label class="mb-2 font-semibold">Piezas</label>
