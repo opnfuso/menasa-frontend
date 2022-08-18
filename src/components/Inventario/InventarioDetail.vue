@@ -34,10 +34,6 @@
           <label class="mb-2 font-semibold">Piezas</label>
           <input type="number" class="input w-full" value="10" />
         </div>
-        <div class="flex flex-col">
-          <label class="mb-2 font-semibold">Observaciones</label>
-          <textarea class="textarea textarea-bordered">NA</textarea>
-        </div>
       </div>
     </div>
     <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -57,6 +53,10 @@
             >
             <input type="number" class="input w-full" value="5" />
           </div>
+          <div class="flex flex-col">
+            <label class="mb-2 font-semibold">Observaciones</label>
+            <textarea class="textarea textarea-bordered">NA</textarea>
+          </div>
         </div>
       </div>
       <div class="divider"></div>
@@ -74,6 +74,10 @@
               >Cantidad de medicamento</label
             >
             <input type="number" class="input w-full" value="5" />
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-2 font-semibold">Observaciones</label>
+            <textarea class="textarea textarea-bordered">NA</textarea>
           </div>
         </div>
       </div>
