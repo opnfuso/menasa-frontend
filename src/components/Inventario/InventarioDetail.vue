@@ -1,6 +1,9 @@
 <template>
   <main class="flex flex-col pt-6 pb-12 pr-12 pl-12" v-if="!loading">
-    <h1 class="text-3xl font-bold mb-8">Inventario</h1>
+    <div class="grid grid-cols-4 gap-4">
+      <h1 class="col-span-3 text-3xl font-bold mb-8">Inventario</h1>
+      <button class="btn btn-primary min-w-fit">Guardar</button>
+    </div>
     <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
       <h2 class="text-2xl font-semibold mb-4">Medicamento</h2>
       <div class="mb-4 grid grid-cols-1 gap-4">
