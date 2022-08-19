@@ -1,4 +1,4 @@
-import type Medicamento from './medicamento.interface';
+import type Medicamento from "./medicamento.interface";
 
 interface Lote {
   fecha_vencimiento: Date;

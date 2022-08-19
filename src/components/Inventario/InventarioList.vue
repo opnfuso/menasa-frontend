@@ -8,7 +8,7 @@
       :key="index"
     >
       <div class="card-body">
-        <h2 class="card-title">Inventario</h2>
+        <h2 class="card-title">Inventario # {{ index + 1 }}</h2>
         <p>Medicamento: {{ inventario.id_medicamento.nombre }}</p>
         <p>Piezas Totales: {{ inventario.piezas }}</p>
         <div class="card-actions">
