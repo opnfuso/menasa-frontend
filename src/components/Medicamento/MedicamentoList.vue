@@ -1,6 +1,6 @@
 <template>
-  <div class="overflow-x-auto">
-    <h1 class="text-3xl font-bold mb-8">Lista de Precios</h1>
+  <div class="overflow-x-auto p-4">
+    <h1 class="text-3xl font-bold mb-4">Lista de Precios</h1>
     <table class="table table-compact w-full">
       <thead>
         <tr>
@@ -12,15 +12,14 @@
           <th>Precio</th>
         </tr>
       </thead>
-      <tbody v-for="(medicamento, index) in medicamentos"
-      :key="index">
+      <tbody v-for="(medicamento, index) in medicamentos" :key="index">
         <tr>
           <!-- <th>{{ index + 1 }}</th> -->
-          <td>{{ medicamento.nombre}}</td>
-          <td>{{ medicamento.compuesto_activo}}</td>
-          <td>{{ medicamento.laboratorio}}</td>
-          <td>{{ medicamento.codigo_barras}}</td>
-          <td>{{ medicamento.precio}}</td>
+          <td>{{ medicamento.nombre }}</td>
+          <td>{{ medicamento.compuesto_activo }}</td>
+          <td>{{ medicamento.laboratorio }}</td>
+          <td>{{ medicamento.codigo_barras }}</td>
+          <td>{{ medicamento.precio }}</td>
         </tr>
       </tbody>
     </table>
@@ -28,11 +27,11 @@
 </template>
 
 <script lang="ts">
-  import type Medicamento from "@/interfaces/medicamento.interface";
-  import { getMedicamentos } from "@/services/medicamento.service";
-  import { defineComponent } from "vue";
-  
-  export default defineComponent({
+import type { Medicamento } from "@/interfaces/medicamento.interface";
+import { getMedicamentos } from "@/services/medicamento.service";
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "medicamento-list",
   data() {
     return {
