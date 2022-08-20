@@ -2,6 +2,11 @@
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
   >
+    <router-link
+      to="/inventario/new"
+      class="btn btn-primary w-auto shadow-xl h-auto"
+      >Añadir</router-link
+    >
     <div
       class="card w-auto bg-base-100 shadow-xl"
       v-for="(inventario, index) in inventarios"
