@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import type Inventario from "@/interfaces/inventario.interface";
+import type { Inventario } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import { defineComponent } from "vue";
 

@@ -2,6 +2,7 @@ import type {
   Inventario,
   InventarioUpdateResponse,
   InventarioUpdate,
+  InventarioCreate,
 } from "@/interfaces/inventario.interface";
 import type { AxiosResponse } from "axios";
 import axios from "./axios";
@@ -18,3 +19,7 @@ export const updateInventario = async (
   inventario: InventarioUpdate
 ): Promise<AxiosResponse<InventarioUpdateResponse>> =>
   axios.patch(`/inventario/${id}`, inventario);
+
+export const createInventario = async (
+  inventario: InventarioCreate
+): Promise<AxiosResponse<Inventario>> => await axios.post("/inventario", inventario);

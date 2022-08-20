@@ -67,6 +67,15 @@
           <h3 class="text-xl mb-4 font-semibold">Lote : {{ lote.lote }}</h3>
           <div class="mb-4 grid grid-cols-1 gap-4">
             <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Identificador</label>
+              <input
+                type="number"
+                min="0"
+                class="input w-full"
+                v-model="lote.lote"
+              />
+            </div>
+            <div class="flex flex-col">
               <label for="date" class="mb-2 font-semibold"
                 >Fecha de vencimiento</label
               >
@@ -74,6 +83,17 @@
                 type="date"
                 class="input w-full"
                 v-model="lote.fecha_vencimiento_string"
+              />
+            </div>
+            <div class="flex flex-col">
+              <label for="date" class="mb-2 font-semibold"
+                >Fecha de ingreso</label
+              >
+              <input
+                type="date"
+                class="input w-full"
+                v-model="lote.fecha_ingreso_string"
+                required
               />
             </div>
             <div class="flex flex-col">
@@ -120,7 +140,9 @@ export default defineComponent({
         this.inventario = response.data;
         this.inventario.lotes.map((lote) => {
           const date = new Date(lote.fecha_vencimiento);
+          const date2 = new Date(lote.fecha_ingreso);
           lote.fecha_vencimiento_string = date.toISOString().split("T")[0];
+          lote.fecha_ingreso_string = date2.toISOString().split("T")[0];
         });
       } catch (error) {
         console.error(error);
@@ -139,6 +161,11 @@ export default defineComponent({
           cancelButtonText: "No, cancelar",
         }).then(async (result) => {
           if (result.value) {
+            this.inventario.lotes.forEach((lote) => {
+              lote.fecha_vencimiento = new Date(lote.fecha_vencimiento_string);
+              lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
+            });
+
             const inventarioUpdate: InventarioUpdate = {
               _id: this.inventario._id,
               piezas: this.inventario.piezas,
