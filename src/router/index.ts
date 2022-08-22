@@ -22,6 +22,11 @@ const routes: RouteRecordRaw[] = [
     name: "medicamento",
     component: () => import("@/components/Medicamento/MedicamentoList.vue"),
   },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("@/LogIn.vue"),
+  },
 ];
 
 const router = createRouter({

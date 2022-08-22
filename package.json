@@ -14,6 +14,7 @@
     "axios": "^0.27.2",
     "daisyui": "^2.24.0",
     "dotenv": "^16.0.1",
+    "firebase": "^9.9.3",
     "sweetalert2": "^11.4.28",
     "vue": "^3.2.37",
     "vue-multiselect": "^3.0.0-alpha.2",
