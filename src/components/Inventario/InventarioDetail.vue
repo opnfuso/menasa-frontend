@@ -70,7 +70,7 @@
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Identificador</label>
               <input
-                type="number"
+                type="text"
                 min="0"
                 class="input w-full"
                 v-model="lote.lote"
@@ -101,7 +101,11 @@
               <label for="text" class="mb-2 font-semibold"
                 >Cantidad de medicamento</label
               >
-              <input type="number" class="input w-full" value="5" />
+              <input
+                type="number"
+                class="input w-full"
+                v-model="lote.cantidad"
+              />
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Observaciones</label>
