@@ -47,6 +47,13 @@ export default defineComponent({
         console.error(error);
       }
     },
+    ordeningMedicamentos() {
+      try {
+        this.medicamentos.sort();
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
   mounted() {
     this.loadMedicamentos();
