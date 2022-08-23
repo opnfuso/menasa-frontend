@@ -1,4 +1,4 @@
-import type Inventario from "./inventario.interface";
+import type { Inventario } from "./inventario.interface";
 
 interface Medicamento {
   piezas: number;
@@ -14,5 +14,6 @@ export default interface Pedido {
   cliente: string;
   completado: boolean;
   fecha_salida: Date;
+  fecha_entrada: Date;
   medicamentos: Medicamento[];
 }
