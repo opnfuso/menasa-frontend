@@ -2,19 +2,21 @@ import type {
   Medicamento,
   MedicamentoUpdateResponse,
 } from "@/interfaces/medicamento.interface";
-import type { AxiosResponse } from "axios";
+import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import axios from "./axios";
 
-export const getMedicamentos = async (): Promise<
-  AxiosResponse<Medicamento[]>
-> => await axios.get("/medicamento");
+export const getMedicamentos = async (
+  config: AxiosRequestConfig
+): Promise<AxiosResponse<Medicamento[]>> => await axios.get("/medicamento", config);
 
 export const getMedicamento = async (
-  id: string
-): Promise<AxiosResponse<Medicamento>> => await axios.get(`/medicamento/${id}`);
+  id: string,
+  config: AxiosRequestConfig
+): Promise<AxiosResponse<Medicamento>> => await axios.get(`/medicamento/${id}`, config);
 
 export const updateMedicamento = async (
   id: string,
-  medicamento: Medicamento
+  medicamento: Medicamento,
+  config: AxiosRequestConfig
 ): Promise<AxiosResponse<MedicamentoUpdateResponse>> =>
-  await axios.patch(`medicamento/${id}`, medicamento);
+  await axios.patch(`medicamento/${id}`, medicamento, config);

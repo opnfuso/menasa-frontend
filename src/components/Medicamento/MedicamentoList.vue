@@ -29,6 +29,7 @@
 <script lang="ts">
 import type { Medicamento } from "@/interfaces/medicamento.interface";
 import { getMedicamentos } from "@/services/medicamento.service";
+import { getAuth } from "firebase/auth";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -41,7 +42,14 @@ export default defineComponent({
   methods: {
     async loadMedicamentos() {
       try {
-        const response = await getMedicamentos();
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await getMedicamentos(config);
         this.medicamentos = response.data;
       } catch (error) {
         console.error(error);

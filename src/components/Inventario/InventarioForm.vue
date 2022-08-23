@@ -110,6 +110,7 @@ import { getMedicamentos } from "@/services/medicamento.service";
 import { createInventario } from "@/services/inventario.service";
 import Multiselect from "vue-multiselect";
 import Swal from "sweetalert2";
+import { getAuth } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-form",
@@ -126,9 +127,20 @@ export default defineComponent({
   },
   methods: {
     async listMedicamentos() {
-      const response = await getMedicamentos();
-      this.loading = false;
-      this.medicamentos = response.data;
+      try {
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await getMedicamentos(config);
+        this.loading = false;
+        this.medicamentos = response.data;
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     addLote() {
@@ -167,9 +179,16 @@ export default defineComponent({
             icon: "error",
           });
         } else {
+          const auth = getAuth();
+          const token = await auth.currentUser?.getIdToken(true);
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
           this.inventario.id_medicamento = this.value._id;
           console.log(this.inventario);
-          const response = await createInventario(this.inventario);
+          const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
             Swal.fire("Exito", "Inventario creado", "success");
           }
