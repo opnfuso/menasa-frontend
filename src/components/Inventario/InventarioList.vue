@@ -1,6 +1,7 @@
 <template>
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
+    v-if="!loading"
   >
     <router-link
       to="/inventario/new"
@@ -33,19 +34,29 @@
 import type { Inventario } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import { defineComponent } from "vue";
+import { getAuth } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-list",
   data() {
     return {
       inventarios: [] as Inventario[],
+      loading: true,
     };
   },
   methods: {
     async loadInventarios() {
       try {
-        const response = await getInventarios();
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await getInventarios(config);
         this.inventarios = response.data;
+        this.loading = false;
       } catch (error) {
         console.error(error);
       }
@@ -53,6 +64,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadInventarios();
+    this.loading = true;
   },
 });
 </script>

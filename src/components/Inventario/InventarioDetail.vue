@@ -130,6 +130,7 @@ import { getInventario, updateInventario } from "@/services/inventario.service";
 import { updateMedicamento } from "@/services/medicamento.service";
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
+import { getAuth } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-detail",
@@ -139,7 +140,14 @@ export default defineComponent({
   methods: {
     async loadInventario(id: string) {
       try {
-        const response = await getInventario(id);
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await getInventario(id, config);
         this.loading = false;
         this.inventario = response.data;
         this.inventario.lotes.map((lote) => {
@@ -176,15 +184,24 @@ export default defineComponent({
               lotes: this.inventario.lotes,
               id_medicamento: this.inventario.id_medicamento._id,
             };
+            const auth = getAuth();
+            const token = await auth.currentUser?.getIdToken(true);
+            const config = {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            };
 
             const response = await updateInventario(
               this.inventario._id,
-              inventarioUpdate
+              inventarioUpdate,
+              config
             );
 
             const response2 = await updateMedicamento(
               this.inventario.id_medicamento._id,
-              this.inventario.id_medicamento
+              this.inventario.id_medicamento,
+              config
             );
 
             if (
