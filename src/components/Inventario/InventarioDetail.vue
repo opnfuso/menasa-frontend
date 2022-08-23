@@ -63,7 +63,7 @@
       <!-- Lotes -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Lotes</h2>
-        <div @click="addLote()" class="btn btn-secondary w-full">Añadir</div>
+        <div @click="addLote()" class="btn btn-success w-full">Añadir</div>
         <div v-for="(lote, index) in inventario.lotes" :key="index">
           <h3 class="text-xl mb-4 font-semibold">Lote : {{ lote.lote }}</h3>
           <div class="mb-4 grid grid-cols-1 gap-4">
@@ -110,7 +110,7 @@
                 v-model="lote.observaciones"
               ></textarea>
             </div>
-            <div @click="removeLote(index)" class="btn btn-accent w-full">
+            <div @click="removeLote(index)" class="btn btn-error w-full">
               Eliminar
             </div>
           </div>
