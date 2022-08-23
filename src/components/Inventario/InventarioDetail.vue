@@ -63,6 +63,7 @@
       <!-- Lotes -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Lotes</h2>
+        <div @click="addLote()" class="btn btn-secondary w-full">Añadir</div>
         <div v-for="(lote, index) in inventario.lotes" :key="index">
           <h3 class="text-xl mb-4 font-semibold">Lote : {{ lote.lote }}</h3>
           <div class="mb-4 grid grid-cols-1 gap-4">
@@ -108,6 +109,9 @@
                 class="textarea textarea-bordered"
                 v-model="lote.observaciones"
               ></textarea>
+            </div>
+            <div @click="removeLote(index)" class="btn btn-accent w-full">
+              Eliminar
             </div>
           </div>
           <div class="divider"></div>
@@ -208,6 +212,25 @@ export default defineComponent({
       } catch (error) {
         console.error(error);
       }
+    },
+    addLote() {
+      if (this.inventario.lotes === undefined) {
+        this.inventario.lotes = [];
+      }
+
+      this.inventario.lotes.push({
+        cantidad: 0,
+        observaciones: "",
+        fecha_ingreso: new Date(),
+        fecha_vencimiento: new Date(),
+        fecha_vencimiento_string: "",
+        fecha_ingreso_string: "",
+        lote: "",
+      });
+    },
+
+    removeLote(index: number) {
+      this.inventario.lotes.splice(index, 1);
     },
   },
   mounted() {

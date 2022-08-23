@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-base-200 h-fit min-h-screen">
+  <main class="bg-base-200 h-fit min-h-screen" data-theme="light">
     <NavBar />
     <router-view></router-view>
   </main>
