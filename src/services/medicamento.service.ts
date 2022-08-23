@@ -1,6 +1,7 @@
 import type {
   Medicamento,
   MedicamentoUpdateResponse,
+  MedicamentoCreate,
 } from "@/interfaces/medicamento.interface";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import axios from "./axios";
@@ -22,3 +23,10 @@ export const updateMedicamento = async (
   config: AxiosRequestConfig
 ): Promise<AxiosResponse<MedicamentoUpdateResponse>> =>
   await axios.patch(`medicamento/${id}`, medicamento, config);
+
+  export const createMedicamento = async (
+    medicamento: MedicamentoCreate,
+    config: AxiosRequestConfig
+  ): Promise<AxiosResponse<Medicamento>> =>
+    await axios.post("/medicamento", medicamento, config);
+  
