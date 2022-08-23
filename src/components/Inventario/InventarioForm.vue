@@ -4,7 +4,7 @@
     <form @submit.prevent="saveInventario()">
       <div class="grid grid-cols-4 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Inventario</h1>
-        <button class="btn btn-primary min-w-fit">Crear</button>
+        <button class="btn btn-success min-w-fit">Crear</button>
       </div>
       <!-- Información -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -37,7 +37,7 @@
       <!-- Lotes -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Lotes</h2>
-        <div @click="addLote()" class="btn btn-secondary w-full">Añadir</div>
+        <div @click="addLote()" class="btn btn-info w-full">Añadir</div>
         <div class="divider"></div>
         <div v-for="(lote, index) in inventario.lotes" :key="index">
           <h3 class="text-xl mb-4 font-semibold">Lote</h3>
@@ -91,7 +91,7 @@
                 v-model="lote.observaciones"
               ></textarea>
             </div>
-            <div @click="removeLote(index)" class="btn btn-accent w-full">
+            <div @click="removeLote(index)" class="btn btn-error w-full">
               Eliminar
             </div>
           </div>
