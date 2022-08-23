@@ -22,4 +22,5 @@ export const updateInventario = async (
 
 export const createInventario = async (
   inventario: InventarioCreate
-): Promise<AxiosResponse<Inventario>> => await axios.post("/inventario", inventario);
+): Promise<AxiosResponse<Inventario>> =>
+  await axios.post("/inventario", inventario);
