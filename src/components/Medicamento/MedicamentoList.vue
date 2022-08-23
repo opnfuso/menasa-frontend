@@ -1,6 +1,9 @@
 <template>
   <div class="overflow-x-auto p-4">
-    <h1 class="text-3xl font-bold mb-4">Lista de Precios</h1>
+    <div class="grid grid-cols-4 gap-4">
+        <h1 class="col-span-3 text-3xl font-bold mb-8">Lista de Precios</h1>
+        <button class="btn btn-primary min-w-fit">Añadir</button>
+      </div>
     <table class="table table-compact w-full">
       <thead>
         <tr>
