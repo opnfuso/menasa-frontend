@@ -3,7 +3,7 @@
     <form @submit.prevent="handleUpdate()">
       <div class="grid grid-cols-4 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Inventario</h1>
-        <button class="btn btn-primary min-w-fit">Guardar</button>
+        <button class="btn btn-success min-w-fit">Guardar</button>
       </div>
       <!-- Medicamento -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -63,7 +63,7 @@
       <!-- Lotes -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Lotes</h2>
-        <div @click="addLote()" class="btn btn-success w-full">Añadir</div>
+        <div @click="addLote()" class="btn btn-info w-full mb-2">Añadir</div>
         <div v-for="(lote, index) in inventario.lotes" :key="index">
           <h3 class="text-xl mb-4 font-semibold">Lote : {{ lote.lote }}</h3>
           <div class="mb-4 grid grid-cols-1 gap-4">
