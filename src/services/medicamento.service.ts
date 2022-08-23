@@ -7,12 +7,14 @@ import axios from "./axios";
 
 export const getMedicamentos = async (
   config: AxiosRequestConfig
-): Promise<AxiosResponse<Medicamento[]>> => await axios.get("/medicamento", config);
+): Promise<AxiosResponse<Medicamento[]>> =>
+  await axios.get("/medicamento", config);
 
 export const getMedicamento = async (
   id: string,
   config: AxiosRequestConfig
-): Promise<AxiosResponse<Medicamento>> => await axios.get(`/medicamento/${id}`, config);
+): Promise<AxiosResponse<Medicamento>> =>
+  await axios.get(`/medicamento/${id}`, config);
 
 export const updateMedicamento = async (
   id: string,
