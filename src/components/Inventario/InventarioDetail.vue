@@ -249,7 +249,6 @@ export default defineComponent({
         lote: "",
       });
     },
-
     removeLote(index: number) {
       this.inventario.lotes.splice(index, 1);
     },

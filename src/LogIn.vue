@@ -91,12 +91,8 @@ export default defineComponent({
     async login() {
       try {
         const auth = getAuth();
-        const res = await signInWithEmailAndPassword(
-          auth,
-          this.email,
-          this.password
-        );
-        console.log(res);
+        await signInWithEmailAndPassword(auth, this.email, this.password);
+        this.$router.push("/");
       } catch (error) {
         console.error(error);
       }

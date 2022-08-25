@@ -24,9 +24,8 @@ export const updateMedicamento = async (
 ): Promise<AxiosResponse<MedicamentoUpdateResponse>> =>
   await axios.patch(`medicamento/${id}`, medicamento, config);
 
-  export const createMedicamento = async (
-    medicamento: MedicamentoCreate,
-    config: AxiosRequestConfig
-  ): Promise<AxiosResponse<Medicamento>> =>
-    await axios.post("/medicamento", medicamento, config);
-  
+export const createMedicamento = async (
+  medicamento: MedicamentoCreate,
+  config: AxiosRequestConfig
+): Promise<AxiosResponse<Medicamento>> =>
+  await axios.post("/medicamento", medicamento, config);
