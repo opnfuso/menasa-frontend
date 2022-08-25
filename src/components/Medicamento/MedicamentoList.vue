@@ -12,6 +12,7 @@
       <thead>
         <tr>
           <!-- <th></th> -->
+          <th></th>
           <th>Medicamento</th>
           <th>Sal-Compuesto Activo</th>
           <th>Laboratorio</th>
@@ -23,16 +24,43 @@
         <tr>
           <!-- <th>{{ index + 1 }}</th> -->
           <td>
+            <input type="checkbox" class="checkbox" checked="false" />
+          </td>
+          <td>
             <input
               class="input w-full"
               type="text"
               v-model="medicamento.nombre"
             />
           </td>
-          <td>{{ medicamento.compuesto_activo }}</td>
-          <td>{{ medicamento.laboratorio }}</td>
-          <td>{{ medicamento.codigo_barras }}</td>
-          <td>{{ medicamento.precio }}</td>
+          <td>
+            <input
+              class="input w-full"
+              type="text"
+              v-model="medicamento.compuesto_activo"
+            />
+          </td>
+          <td>
+            <input
+              class="input w-full"
+              type="text"
+              v-model="medicamento.laboratorio"
+            />
+          </td>
+          <td>
+            <input
+              class="input w-full"
+              type="text"
+              v-model="medicamento.codigo_barras"
+            />
+          </td>
+          <td>
+            <input
+              class="input w-full"
+              type="text"
+              v-model="medicamento.precio"
+            />
+          </td>
         </tr>
       </tbody>
     </table>
@@ -43,6 +71,7 @@
 import type { Medicamento } from "@/interfaces/medicamento.interface";
 import { getMedicamentos } from "@/services/medicamento.service";
 import { createMedicamento } from "@/services/medicamento.service";
+import type { MedicamentoCreate } from "@/interfaces/medicamento.interface";
 import { getAuth } from "firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "vue-multiselect";
@@ -53,6 +82,8 @@ export default defineComponent({
   data() {
     return {
       medicamentos: [] as Medicamento[],
+      medicamento: {} as MedicamentoCreate,
+      modifieds: [] as number[],
       value: null,
     };
   },
@@ -72,27 +103,32 @@ export default defineComponent({
         console.error(error);
       }
     },
-    async saveMedicamento()
-    {
-      try{
-        const auth = getAuth();
-          const token = await auth.currentUser?.getIdToken(true);
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          console.log(this.medicamentos);
-          const response = await createMedicamento(this.medicamentos, config);
-          if (response.status === 201) {
-            Swal.fire("Exito", "Medicamento creado", "success");
-          }
-      }catch(error)
-      {
-        Swal.fire("Error", "Error al crear medicamento", "error");
+    async addMedicamento() {
+      try {
+        if (this.medicamento === undefined) {
+          this.medicamentos = [];
+        }
+        this.medicamentos.push({});
+      } catch (error) {
+        Swal.fire("Error", "Error al crear el medicamento", "error");
         console.error(error);
       }
     },
+    // async saveMedicamento() {
+    //   try {
+    //     const auth = getAuth();
+    //     const token = await auth.currentUser?.getIdToken(true);
+    //     const config = {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     };
+
+    //   } catch (error) {
+    //     Swal.fire("Error", "Error al guardar el/los medicamento/s", "error");
+    //     console.error(error);
+    //   }
+    // },
   },
   mounted() {
     this.loadMedicamentos();

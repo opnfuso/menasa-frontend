@@ -16,7 +16,6 @@ export interface MedicamentoUpdateResponse {
 }
 
 export interface MedicamentoCreate {
-  _id: string;
   codigo_barras: number;
   precio: number;
   nombre: string;
