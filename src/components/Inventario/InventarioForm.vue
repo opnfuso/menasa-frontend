@@ -22,7 +22,7 @@
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Medicamento</label>
             <multiselect
-              v-model="value"
+              v-model="medicamento"
               track-by="nombre"
               label="nombre"
               placeholder="Busca un medicamento"
@@ -110,7 +110,7 @@ import { getMedicamentos } from "@/services/medicamento.service";
 import { createInventario } from "@/services/inventario.service";
 import Multiselect from "vue-multiselect";
 import Swal from "sweetalert2";
-import { getAuth } from "firebase/auth";
+import { getAuth, type Auth, type User } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-form",
@@ -119,17 +119,17 @@ export default defineComponent({
   },
   data() {
     return {
+      auth: {} as Auth,
       inventario: {} as InventarioCreate,
       medicamentos: [] as Medicamento[],
-      value: null,
+      medicamento: null,
       loading: true,
     };
   },
   methods: {
     async listMedicamentos() {
       try {
-        const auth = getAuth();
-        const token = await auth.currentUser?.getIdToken(true);
+        const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -165,7 +165,7 @@ export default defineComponent({
 
     async saveInventario() {
       try {
-        if (this.value === null) {
+        if (this.medicamento === null) {
           Swal.fire({
             title: "Error",
             text: "Selecciona un medicamento",
@@ -179,14 +179,13 @@ export default defineComponent({
             icon: "error",
           });
         } else {
-          const auth = getAuth();
-          const token = await auth.currentUser?.getIdToken(true);
+          const token = await this.auth.currentUser?.getIdToken(true);
           const config = {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           };
-          this.inventario.id_medicamento = this.value._id;
+          this.inventario.id_medicamento = this.medicamento._id;
           console.log(this.inventario);
           const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
@@ -200,8 +199,36 @@ export default defineComponent({
     },
   },
   async mounted() {
-    this.loading = true;
-    await this.listMedicamentos();
+    const auth = getAuth();
+    new Promise<User>((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          if (user) {
+            unsubscribe();
+            resolve(user);
+          } else {
+            unsubscribe();
+            reject();
+          }
+        },
+        (error) => {
+          unsubscribe();
+          reject(error);
+        }
+      );
+    })
+      .then(async (user) => {
+        this.auth = auth;
+        this.loading = false;
+        await this.listMedicamentos();
+      })
+      .catch((error) => {
+        if (error) {
+          console.error(error);
+        } else {
+          this.$router.push("/login");
+        }
+      });
   },
 });
 </script>
