@@ -187,8 +187,7 @@ export default defineComponent({
               lotes: this.inventario.lotes,
               id_medicamento: this.inventario.id_medicamento._id,
             };
-            const auth = getAuth();
-            const token = await auth.currentUser?.getIdToken(true);
+            const token = await this.auth.currentUser?.getIdToken(true);
             const config = {
               headers: {
                 Authorization: `Bearer ${token}`,
