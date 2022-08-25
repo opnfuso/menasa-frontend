@@ -34,12 +34,13 @@
 import type { Inventario } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import { defineComponent } from "vue";
-import { getAuth } from "firebase/auth";
+import { getAuth, type Auth, type User } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-list",
   data() {
     return {
+      auth: {} as Auth,
       inventarios: [] as Inventario[],
       loading: true,
     };
@@ -47,8 +48,7 @@ export default defineComponent({
   methods: {
     async loadInventarios() {
       try {
-        const auth = getAuth();
-        const token = await auth.currentUser?.getIdToken(true);
+        const token = await this.auth.currentUser?.getIdToken();
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,8 +63,36 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.loadInventarios();
-    this.loading = true;
+    const auth = getAuth();
+    new Promise<User>((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          if (user) {
+            unsubscribe();
+            resolve(user);
+          } else {
+            unsubscribe();
+            reject();
+          }
+        },
+        (error) => {
+          unsubscribe();
+          reject(error);
+        }
+      );
+    })
+      .then(async (user) => {
+        this.auth = auth;
+        this.loading = false;
+        this.loadInventarios();
+      })
+      .catch((error) => {
+        if (error) {
+          console.error(error);
+        } else {
+          this.$router.push("/login");
+        }
+      });
   },
 });
 </script>

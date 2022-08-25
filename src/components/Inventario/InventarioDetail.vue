@@ -134,18 +134,17 @@ import { getInventario, updateInventario } from "@/services/inventario.service";
 import { updateMedicamento } from "@/services/medicamento.service";
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
-import { getAuth } from "firebase/auth";
+import { getAuth, type Auth, type User } from "firebase/auth";
 
 export default defineComponent({
   name: "inventario-detail",
   data() {
-    return { inventario: {} as Inventario, loading: true };
+    return { auth: {} as Auth, inventario: {} as Inventario, loading: true };
   },
   methods: {
     async loadInventario(id: string) {
       try {
-        const auth = getAuth();
-        const token = await auth.currentUser?.getIdToken(true);
+        const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -254,10 +253,38 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.loading = true;
-    if (typeof this.$route.params.id === "string") {
-      this.loadInventario(this.$route.params.id);
-    }
+    const auth = getAuth();
+    new Promise<User>((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          if (user) {
+            unsubscribe();
+            resolve(user);
+          } else {
+            unsubscribe();
+            reject();
+          }
+        },
+        (error) => {
+          unsubscribe();
+          reject(error);
+        }
+      );
+    })
+      .then(async (user) => {
+        this.auth = auth;
+        this.loading = false;
+        if (typeof this.$route.params.id === "string") {
+          this.loadInventario(this.$route.params.id);
+        }
+      })
+      .catch((error) => {
+        if (error) {
+          console.error(error);
+        } else {
+          this.$router.push("/login");
+        }
+      });
   },
 });
 </script>
