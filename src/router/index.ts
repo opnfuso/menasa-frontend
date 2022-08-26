@@ -25,12 +25,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/login",
     name: "login",
-    component: () => import("@/LogIn.vue"),
+    component: () => import("@/components/LogIn.vue"),
   },
   {
     path: "/chat",
     name: "chat",
-    component: () => import("@/Chat.vue"),
+    component: () => import("@/components/Chat.vue"),
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: () => import("@/components/Profile.vue"),
   },
 ];
 

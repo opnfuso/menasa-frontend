@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar bg-base-100">
+  <div v-if="!loading" class="navbar bg-base-100">
     <div class="navbar-start">
       <div class="dropdown">
         <label tabindex="0" class="btn btn-ghost btn-circle">
@@ -25,6 +25,7 @@
           <li><router-link to="/inventario">Inventarios</router-link></li>
           <li><router-link to="/medicamento">Medicamentos</router-link></li>
           <li><router-link to="/pedido">Pedidos</router-link></li>
+          <li><router-link to="/chat">Chat</router-link></li>
         </ul>
       </div>
     </div>
@@ -49,7 +50,7 @@
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-      </button>
+      </button> -->
       <button class="btn btn-ghost btn-circle">
         <div class="indicator">
           <svg
@@ -68,15 +69,73 @@
           </svg>
           <span class="badge badge-xs badge-primary indicator-item"></span>
         </div>
-      </button> -->
+      </button>
+      <div v-if="auth.currentUser" class="dropdown dropdown-end">
+        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+          <div class="w-10 rounded-full">
+            <img v-bind:src="auth.currentUser?.photoURL" />
+          </div>
+        </label>
+        <ul
+          tabindex="0"
+          class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          <li><router-link to="/profile">Perfil</router-link></li>
+          <li><button @click="signOut()">Cerrar Sesión</button></li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { getAuth, type Auth, type User } from "@firebase/auth";
 
 export default defineComponent({
   name: "NavBar",
+  data() {
+    return {
+      auth: {} as Auth,
+      loading: true,
+    };
+  },
+  methods: {
+    async signOut() {
+      await this.auth.signOut();
+      this.$router.push("/login");
+    },
+  },
+  mounted() {
+    const auth = getAuth();
+    new Promise<User>((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(
+        (user) => {
+          if (user) {
+            unsubscribe();
+            resolve(user);
+          } else {
+            unsubscribe();
+            reject();
+          }
+        },
+        (error) => {
+          unsubscribe();
+          reject(error);
+        }
+      );
+    })
+      .then(async (user) => {
+        this.auth = auth;
+        this.loading = false;
+      })
+      .catch((error) => {
+        if (error) {
+          console.error(error);
+        } else {
+          this.$router.push("/login");
+        }
+      });
+  },
 });
 </script>

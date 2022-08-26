@@ -1,7 +1,7 @@
 <template>
   <div
-    class="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen"
     v-if="!loading"
+    class="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen"
   >
     <div
       id="messages"
@@ -29,8 +29,8 @@
               </div>
             </div>
             <img
-              src="https://images.unsplash.com/photo-1590031905470-a1a1feacbb0b?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-              alt="My profile"
+              v-bind:src="message.user.photoURL"
+              alt="Mi perfil"
               class="w-6 h-6 rounded-full order-2"
             />
           </div>
@@ -42,11 +42,7 @@
             >
               <div>
                 <a v-if="message.isImage" v-bind:href="message.content">
-                  <img
-                    v-bind:src="message.content"
-                    alt="Photo"
-                    @click="showImage(message.content)"
-                  />
+                  <img v-bind:src="message.content" alt="Photo" />
                 </a>
                 <span
                   v-else
@@ -67,7 +63,15 @@
     <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
       <div class="relative flex">
         <input
+          v-if="message.isImage"
           type="text"
+          placeholder="Escribe un mensaje"
+          class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-3 bg-gray-200 rounded-md py-3"
+        />
+        <input
+          v-else
+          type="text"
+          v-model="message.content"
           placeholder="Escribe un mensaje"
           class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-3 bg-gray-200 rounded-md py-3"
         />
@@ -126,13 +130,17 @@ import { defineComponent } from "vue";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import type { ReceiveMessage, SendMessage } from "@/interfaces/chat.interface";
-import { getAuth, type User } from "firebase/auth";
+import { getAuth, type Auth, type User } from "firebase/auth";
 import { io, type Socket } from "socket.io-client";
+import { getMessages } from "@/services/chat.service";
+import { getUser } from "@/services/user.service";
+import type { User as IUser } from "@/interfaces/user.interface";
 
 export default defineComponent({
   name: "chat",
   data() {
     return {
+      auth: {} as Auth,
       id: "",
       token: "",
       messages: [] as ReceiveMessage[],
@@ -140,6 +148,7 @@ export default defineComponent({
       loading: true,
       socket: {} as Socket,
       app: {} as FirebaseApp,
+      usersIds: [] as string[],
     };
   },
   async mounted() {
@@ -164,20 +173,23 @@ export default defineComponent({
       );
     })
       .then(async (user) => {
-        this.loading = false;
+        this.auth = auth;
         this.id = user.uid;
         this.token = await user.getIdToken();
+
+        await this.loadMessages();
+
         this.socket = io(import.meta.env.VITE_API_URL);
-
         this.socket.connect();
-
         this.socket.on("exception", (data) => {
           console.error(data);
         });
 
-        this.socket.on("broadcast", (data: ReceiveMessage) => {
+        this.socket.on("broadcast", async (data: ReceiveMessage) => {
           this.messages.push(data);
         });
+
+        this.loading = false;
       })
       .catch((error) => {
         if (error) {
@@ -190,11 +202,8 @@ export default defineComponent({
   methods: {
     sendMessage() {
       try {
-        this.message = {
-          content: "Lorem",
-          isImage: false,
-          token: this.token,
-        };
+        this.message.isImage = false;
+        this.message.token = this.token;
 
         this.socket.emit("message", this.message);
       } catch (error) {
@@ -229,6 +238,20 @@ export default defineComponent({
         });
       };
       input.click();
+    },
+    async loadMessages() {
+      try {
+        const token = await this.auth.currentUser?.getIdToken();
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await getMessages(config);
+        this.messages = response.data;
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 });
