@@ -5,7 +5,7 @@
       <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
         Añadir
       </button>
-      <button class="btn btn-success min-w-fit">Guardar</button>
+      <button @click="saveMedicamento()" class="btn btn-success min-w-fit">Guardar</button>
       <button class="btn btn-error w-full">Eliminar</button>
     </div>
     <table class="table table-compact w-full">
@@ -24,12 +24,13 @@
         <tr>
           <!-- <th>{{ index + 1 }}</th> -->
           <td>
-            <input type="checkbox" class="checkbox" checked="false" />
+            <input type="checkbox" class="checkbox" />
           </td>
           <td>
             <input
               class="input w-full"
               type="text"
+              required="true"
               v-model="medicamento.nombre"
             />
           </td>
@@ -37,6 +38,7 @@
             <input
               class="input w-full"
               type="text"
+              required="true"
               v-model="medicamento.compuesto_activo"
             />
           </td>
@@ -44,20 +46,23 @@
             <input
               class="input w-full"
               type="text"
+              required="true"
               v-model="medicamento.laboratorio"
             />
           </td>
           <td>
             <input
               class="input w-full"
-              type="text"
+              type="number"
+              required="true"
               v-model="medicamento.codigo_barras"
             />
           </td>
           <td>
             <input
               class="input w-full"
-              type="text"
+              type="number"
+              required="true"
               v-model="medicamento.precio"
             />
           </td>
@@ -128,21 +133,49 @@ export default defineComponent({
         console.error(error);
       }
     },
-    // async saveMedicamento() {
-    //   try {
-    //     const auth = getAuth();
-    //     const token = await auth.currentUser?.getIdToken(true);
-    //     const config = {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     };
+    async saveMedicamento() {
+      try {
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        // if (this.value === null) {
+        //   Swal.fire({
+        //     title: "Error",
+        //     text: "Selecciona un medicamento",
+        //     icon: "error",
+        //   });
+        //   return;
+        // } else 
+        if (this.medicamento === undefined) {
+          Swal.fire({
+            title: "Error",
+            text: "No se encuentra cambio aparente u agregacion",
+            icon: "error",
+          });
+        } else {
+          const auth = getAuth();
+          const token = await auth.currentUser?.getIdToken(true);
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          this.medicamentos.id_medicamento = this.value._id;
+          console.log(this.inventario);
+          const response = await createMedicamento(this.inventario, config);
+          if (response.status === 201) {
+            Swal.fire("Exito", "Medicamentos Guardados", "success");
+          }
+        }
 
-    //   } catch (error) {
-    //     Swal.fire("Error", "Error al guardar el/los medicamento/s", "error");
-    //     console.error(error);
-    //   }
-    // },
+      } catch (error) {
+        Swal.fire("Error", "Error al guardar el/los medicamento/s", "error");
+        console.error(error);
+      }
+    },
   },
   mounted() {
     const auth = getAuth();
