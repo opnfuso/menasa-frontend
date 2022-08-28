@@ -1,7 +1,4 @@
-import type {
-  User,
-  UserCreate,
-} from "@/interfaces/user.interface";
+import type { User, UserCreate } from "@/interfaces/user.interface";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import axios from "./axios";
 

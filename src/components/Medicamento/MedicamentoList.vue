@@ -5,7 +5,9 @@
       <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
         Añadir
       </button>
-      <button @click="saveMedicamento()" class="btn btn-success min-w-fit">Guardar</button>
+      <button @click="saveMedicamento()" class="btn btn-success min-w-fit">
+        Guardar
+      </button>
       <button class="btn btn-error w-full">Eliminar</button>
     </div>
     <table class="table table-compact w-full">
@@ -148,7 +150,7 @@ export default defineComponent({
         //     icon: "error",
         //   });
         //   return;
-        // } else 
+        // } else
         if (this.medicamento === undefined) {
           Swal.fire({
             title: "Error",
@@ -170,7 +172,6 @@ export default defineComponent({
             Swal.fire("Exito", "Medicamentos Guardados", "success");
           }
         }
-
       } catch (error) {
         Swal.fire("Error", "Error al guardar el/los medicamento/s", "error");
         console.error(error);

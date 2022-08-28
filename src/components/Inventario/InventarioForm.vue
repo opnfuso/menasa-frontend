@@ -148,7 +148,7 @@ export default defineComponent({
         this.inventario.lotes = [];
       }
 
-      this.inventario.lotes.push({
+      const item = {
         cantidad: 0,
         observaciones: "",
         fecha_ingreso: new Date(),
@@ -156,7 +156,9 @@ export default defineComponent({
         fecha_vencimiento_string: "",
         fecha_ingreso_string: "",
         lote: "",
-      });
+      };
+
+      this.inventario.lotes.splice(0, 0, item);
     },
 
     removeLote(index: number) {
