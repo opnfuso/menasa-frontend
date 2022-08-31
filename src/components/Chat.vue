@@ -7,7 +7,7 @@
       id="messages"
       class="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
     >
-      <div v-for="(message, index) in messages" :key="index">
+      <div v-for="(message, index) in messages" :key="index" name="message">
         <div class="chat-message" v-if="message.userId === id">
           <div class="flex items-end justify-end">
             <div
@@ -19,7 +19,11 @@
                   v-bind:href="message.content"
                   target="_blank"
                 >
-                  <img v-bind:src="message.content" alt="Photo" />
+                  <img
+                    @load="scrollToBottom()"
+                    v-bind:src="message.content"
+                    alt="Photo"
+                  />
                 </a>
                 <span
                   v-else
@@ -52,7 +56,7 @@
               </div>
             </div>
             <img
-              src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+              v-bind:src="message.user.photoURL"
               alt="My profile"
               class="w-6 h-6 rounded-full order-1"
             />
@@ -61,7 +65,7 @@
       </div>
     </div>
     <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
-      <div class="relative flex">
+      <div @keypress="(callback) => keypress(callback)" class="relative flex">
         <input
           v-if="message.isImage"
           type="text"
@@ -133,8 +137,6 @@ import type { ReceiveMessage, SendMessage } from "@/interfaces/chat.interface";
 import { getAuth, type Auth, type User } from "firebase/auth";
 import { io, type Socket } from "socket.io-client";
 import { getMessages } from "@/services/chat.service";
-import { getUser } from "@/services/user.service";
-import type { User as IUser } from "@/interfaces/user.interface";
 
 export default defineComponent({
   name: "chat",
@@ -187,6 +189,10 @@ export default defineComponent({
 
         this.socket.on("broadcast", async (data: ReceiveMessage) => {
           this.messages.push(data);
+          const messages = document.getElementById("messages");
+          messages.scrollTop = messages?.scrollHeight;
+
+          console.log("Mensaje owo");
         });
 
         this.loading = false;
@@ -206,6 +212,8 @@ export default defineComponent({
         this.message.token = this.token;
 
         this.socket.emit("message", this.message);
+
+        this.message.content = "";
       } catch (error) {
         console.error(error);
       }
@@ -234,6 +242,7 @@ export default defineComponent({
             };
 
             this.socket.emit("message", this.message);
+            this.message.content = "";
           });
         });
       };
@@ -251,6 +260,15 @@ export default defineComponent({
         this.messages = response.data;
       } catch (error) {
         console.error(error);
+      }
+    },
+    scrollToBottom() {
+      const messages = document.getElementById("messages");
+      messages.scrollTop = messages?.scrollHeight;
+    },
+    keypress(event: KeyboardEvent) {
+      if (event.key === "Enter") {
+        this.sendMessage();
       }
     },
   },

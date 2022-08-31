@@ -26,6 +26,7 @@
           <li><router-link to="/medicamento">Medicamentos</router-link></li>
           <li><router-link to="/pedido">Pedidos</router-link></li>
           <li><router-link to="/chat">Chat</router-link></li>
+          <li><router-link to="/historial">Historial</router-link></li>
         </ul>
       </div>
     </div>
