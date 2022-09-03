@@ -29,6 +29,7 @@ coverage
 
 # Dotenv
 .env
+.env.dev
 
 # Mock Data
 mock
