@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loading" class="navbar bg-base-100">
+  <div class="navbar bg-base-100">
     <div class="navbar-start">
       <div class="dropdown">
         <label tabindex="0" class="btn btn-ghost btn-circle">
@@ -71,7 +71,7 @@
           <span class="badge badge-xs badge-primary indicator-item"></span>
         </div>
       </button>
-      <div v-if="auth.currentUser" class="dropdown dropdown-end">
+      <div v-if="!loading && auth.currentUser" class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
             <img v-bind:src="auth.currentUser?.photoURL" />

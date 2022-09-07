@@ -1,4 +1,4 @@
-import type { User, UserCreate } from "@/interfaces/user.interface";
+import type { User, UserCreate, UserUpdate } from "@/interfaces/user.interface";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import axios from "./axios";
 
@@ -13,7 +13,7 @@ export const getUser = async (
 
 export const updateUser = async (
   id: string,
-  user: User,
+  user: UserUpdate,
   config: AxiosRequestConfig
 ): Promise<AxiosResponse<User>> =>
   await axios.patch(`user/${id}`, user, config);

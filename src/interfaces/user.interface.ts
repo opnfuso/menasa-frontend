@@ -35,3 +35,10 @@ export interface UserCreate {
   password: string;
   photoURL: string;
 }
+
+export interface UserUpdate {
+  email: string;
+  phoneNumber: string;
+  displayName: string;
+  photoURL?: string;
+}

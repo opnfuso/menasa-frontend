@@ -32,11 +32,11 @@
                 >
               </div>
             </div>
-            <img
+            <!-- <img
               v-bind:src="message.user.photoURL"
-              alt="Mi perfil"
+              alt="foto"
               class="w-6 h-6 rounded-full order-2"
-            />
+            /> -->
           </div>
         </div>
         <div class="chat-message" v-else>
@@ -48,18 +48,23 @@
                 <a v-if="message.isImage" v-bind:href="message.content">
                   <img v-bind:src="message.content" alt="Photo" />
                 </a>
-                <span
+                <div
                   v-else
                   class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-gray-300 text-gray-600"
-                  >{{ message.content }}</span
                 >
+                  <b>{{ message.user.displayName }}</b>
+                  <br />
+                  <span>
+                    {{ message.content }}
+                  </span>
+                </div>
               </div>
             </div>
-            <img
+            <!-- <img
               v-bind:src="message.user.photoURL"
               alt="My profile"
               class="w-6 h-6 rounded-full order-1"
-            />
+            /> -->
           </div>
         </div>
       </div>
