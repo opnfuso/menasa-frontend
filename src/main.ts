@@ -1,10 +1,28 @@
 import { createApp } from "vue";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { createStore } from "vuex";
 
 import App from "./App.vue";
 import "./index.css";
 import router from "./router";
+
+const store = createStore({
+  state() {
+    return {
+      chatFocus: false,
+    };
+  },
+  mutations: {
+    false(state) {
+      state.chatFocus = false;
+    },
+
+    true(state) {
+      state.chatFocus = true;
+    },
+  },
+});
 
 const app = initializeApp({
   apiKey: import.meta.env.VITE_API_KEY,
@@ -17,4 +35,4 @@ const app = initializeApp({
 });
 const analytics = getAnalytics(app);
 
-createApp(App).use(router).mount("#app");
+createApp(App).use(router).use(store).mount("#app");

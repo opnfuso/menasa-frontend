@@ -27,7 +27,7 @@
                 </a>
                 <span
                   v-else
-                  class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white"
+                  class="px-4 py-2 rounded-lg inline-block bg-blue-600 text-white"
                   >{{ message.content }}</span
                 >
               </div>
@@ -44,13 +44,20 @@
             <div
               class="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start"
             >
-              <div>
-                <a v-if="message.isImage" v-bind:href="message.content">
+              <div class="bg-gray-300 rounded">
+                <b v-if="message.isImage" class="text-sm text-gray-600 p-2">{{
+                  message.user.displayName
+                }}</b>
+                <a
+                  v-if="message.isImage"
+                  v-bind:href="message.content"
+                  target="_blank"
+                >
                   <img v-bind:src="message.content" alt="Photo" />
                 </a>
                 <div
                   v-else
-                  class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-gray-300 text-gray-600"
+                  class="px-4 py-2 rounded-lg inline-block bg-gray-300 text-gray-600"
                 >
                   <b>{{ message.user.displayName }}</b>
                   <br />
@@ -71,12 +78,14 @@
     </div>
     <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
       <div @keypress="(callback) => keypress(callback)" class="relative flex">
-        <input
+        <div
           v-if="message.isImage"
           type="text"
           placeholder="Escribe un mensaje"
           class="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-3 bg-gray-200 rounded-md py-3"
-        />
+        >
+          <img v-bind:src="imageUrl" alt="Imagen a enviar" class="h-72" />
+        </div>
         <input
           v-else
           type="text"
@@ -86,7 +95,7 @@
         />
         <div class="absolute right-0 items-center inset-y-0 hidden sm:flex">
           <button
-            @click="sendImage()"
+            @click="previewImage()"
             type="button"
             class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
           >
@@ -156,9 +165,12 @@ export default defineComponent({
       socket: {} as Socket,
       app: {} as FirebaseApp,
       usersIds: [] as string[],
+      imageUrl: "",
+      imageObject: {} as File,
     };
   },
   async mounted() {
+    this.$store.commit("true");
     const auth = getAuth();
     this.app = getApp();
 
@@ -195,9 +207,9 @@ export default defineComponent({
         this.socket.on("broadcast", async (data: ReceiveMessage) => {
           this.messages.push(data);
           const messages = document.getElementById("messages");
-          messages.scrollTop = messages?.scrollHeight;
-
-          console.log("Mensaje owo");
+          if (messages && messages.scrollTop) {
+            messages.scrollTop = messages?.scrollHeight;
+          }
         });
 
         this.loading = false;
@@ -210,48 +222,46 @@ export default defineComponent({
         }
       });
   },
+  unmounted() {
+    this.$store.commit("false");
+  },
   methods: {
     sendMessage() {
       try {
-        this.message.isImage = false;
-        this.message.token = this.token;
+        if (this.message.isImage) {
+          this.sendImage();
+        } else {
+          this.message.isImage = false;
+          this.message.token = this.token;
 
-        this.socket.emit("message", this.message);
+          this.socket.emit("message", this.message);
 
-        this.message.content = "";
+          this.message.content = "";
+        }
       } catch (error) {
         console.error(error);
       }
     },
     sendImage() {
       const storage = getStorage(this.app);
-      let file: File;
+      const storageRef = ref(
+        storage,
+        import.meta.env.VITE_REF_STORAGE + this.imageObject.name
+      );
 
-      const input = document.createElement("input");
-      input.type = "file";
-      input.name = "img";
-      input.accept = "image/png, image/jpeg";
-      input.onchange = (_this) => {
-        file = input.files[0];
-        const storageRef = ref(
-          storage,
-          import.meta.env.VITE_REF_STORAGE + file.name
-        );
+      uploadBytes(storageRef, this.imageObject).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          this.message = {
+            content: downloadURL,
+            isImage: true,
+            token: this.token,
+          };
 
-        uploadBytes(storageRef, file).then((snapshot) => {
-          getDownloadURL(snapshot.ref).then((downloadURL) => {
-            this.message = {
-              content: downloadURL,
-              isImage: true,
-              token: this.token,
-            };
-
-            this.socket.emit("message", this.message);
-            this.message.content = "";
-          });
+          this.socket.emit("message", this.message);
+          this.message.isImage = false;
+          this.message.content = "";
         });
-      };
-      input.click();
+      });
     },
     async loadMessages() {
       try {
@@ -275,6 +285,20 @@ export default defineComponent({
       if (event.key === "Enter") {
         this.sendMessage();
       }
+    },
+    previewImage() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.name = "img";
+      input.accept = "image/png, image/jpeg";
+      input.onchange = (_this) => {
+        if (input && input.files) {
+          this.imageObject = input.files[0];
+          this.imageUrl = URL.createObjectURL(this.imageObject);
+          this.message.isImage = true;
+        }
+      };
+      input.click();
     },
   },
 });

@@ -68,7 +68,10 @@
               d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
             />
           </svg>
-          <span class="badge badge-xs badge-primary indicator-item"></span>
+          <span
+            v-if="notification"
+            class="badge badge-xs badge-primary indicator-item"
+          ></span>
         </div>
       </button>
       <div v-if="!loading && auth.currentUser" class="dropdown dropdown-end">
@@ -92,6 +95,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getAuth, type Auth, type User } from "@firebase/auth";
+import { io, type Socket } from "socket.io-client";
+import type { ReceiveMessage } from "@/interfaces/chat.interface";
 
 export default defineComponent({
   name: "NavBar",
@@ -99,6 +104,8 @@ export default defineComponent({
     return {
       auth: {} as Auth,
       loading: true,
+      socket: {} as Socket,
+      notification: false,
     };
   },
   methods: {
@@ -129,6 +136,19 @@ export default defineComponent({
       .then(async (user) => {
         this.auth = auth;
         this.loading = false;
+
+        console.log(this.$store.state.chatFocus);
+
+        this.socket = io(import.meta.env.VITE_API_URL);
+        this.socket.connect();
+
+        this.socket.on("broadcast", async (data: ReceiveMessage) => {
+          if (!this.$store.state.chatFocus) {
+            this.notification = true;
+          } else {
+            this.notification = false;
+          }
+        });
       })
       .catch((error) => {
         if (error) {
