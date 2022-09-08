@@ -246,7 +246,7 @@ export default defineComponent({
       const storage = getStorage(this.app);
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE + this.imageObject.name
+        import.meta.env.VITE_REF_STORAGE_CHAT + this.imageObject.name
       );
 
       uploadBytes(storageRef, this.imageObject).then((snapshot) => {
