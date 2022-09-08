@@ -52,8 +52,8 @@
           />
         </svg>
       </button> -->
-      <button class="btn btn-ghost btn-circle">
-        <div class="indicator">
+      <router-link to="/chat" class="btn btn-ghost btn-circle">
+        <router class="indicator">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5"
@@ -72,8 +72,8 @@
             v-if="notification"
             class="badge badge-xs badge-primary indicator-item"
           ></span>
-        </div>
-      </button>
+        </router>
+      </router-link>
       <div v-if="!loading && auth.currentUser" class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost btn-circle avatar">
           <div class="w-10 rounded-full">
