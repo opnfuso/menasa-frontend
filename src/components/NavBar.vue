@@ -26,7 +26,12 @@
           <li><router-link to="/medicamento">Medicamentos</router-link></li>
           <li><router-link to="/pedido">Pedidos</router-link></li>
           <li><router-link to="/chat">Chat</router-link></li>
-          <li><router-link to="/historial">Historial</router-link></li>
+          <li v-if="isAdmin">
+            <router-link to="/historial">Historial</router-link>
+          </li>
+          <li v-if="isAdmin">
+            <router-link to="/users">Usuarios</router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -106,6 +111,7 @@ export default defineComponent({
       loading: true,
       socket: {} as Socket,
       notification: false,
+      isAdmin: false,
     };
   },
   methods: {
@@ -137,7 +143,11 @@ export default defineComponent({
         this.auth = auth;
         this.loading = false;
 
-        console.log(this.$store.state.chatFocus);
+        const token = await auth.currentUser?.getIdTokenResult();
+
+        if (token?.claims && token.claims.admin && !!token.claims.admin) {
+          this.isAdmin = true;
+        }
 
         this.socket = io(import.meta.env.VITE_API_URL);
         this.socket.connect();

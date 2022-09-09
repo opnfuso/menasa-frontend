@@ -112,17 +112,17 @@ export default defineComponent({
       }
     },
     async handleUpdate() {
-      try {
-        Swal.fire({
-          title: "¿Estás seguro?",
-          text: "¿Estás seguro de actualizar el perfil?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Si, actualizar",
-          cancelButtonText: "No, cancelar",
-        }).then(async (result) => {
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Estás seguro de actualizar el perfil?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, actualizar",
+        cancelButtonText: "No, cancelar",
+      }).then(async (result) => {
+        try {
           if (result.value) {
             const userUpdate: UserUpdate = {
               email: this.perfil.email,
@@ -150,27 +150,26 @@ export default defineComponent({
                 config
               );
 
-              if (response.status == 200) {
+              if (response.status === 200) {
                 Swal.fire({
                   title: "Actualizado",
                   text: "El inventario ha sido actualizado correctamente",
                   icon: "success",
                   confirmButtonText: "Aceptar",
                 });
-              } else {
-                Swal.fire({
-                  title: "Error",
-                  text: "Ha ocurrido un error al actualizar el inventario",
-                  icon: "error",
-                  confirmButtonText: "Aceptar",
-                });
               }
             }
           }
-        });
-      } catch (error) {
-        console.error(error);
-      }
+        } catch (error) {
+          console.error(error);
+          Swal.fire({
+            title: "Error",
+            text: "Ha ocurrido un error",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          });
+        }
+      });
     },
     async previewImage($event: Event) {
       const target = $event.target as HTMLInputElement;
@@ -221,8 +220,13 @@ export default defineComponent({
     })
       .then(async (user) => {
         this.auth = auth;
+        if (this.auth.currentUser) {
+          console.log(
+            (await auth.currentUser?.getIdTokenResult())?.claims.admin
+          );
 
-        await this.loadUser(this.auth.currentUser?.uid);
+          await this.loadUser(this.auth.currentUser?.uid);
+        }
       })
       .catch((error) => {
         if (error) {

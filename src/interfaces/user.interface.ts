@@ -34,6 +34,7 @@ export interface UserCreate {
   displayName: string;
   password: string;
   photoURL: string;
+  isAdmin: boolean;
 }
 
 export interface UserUpdate {
@@ -41,4 +42,5 @@ export interface UserUpdate {
   phoneNumber: string;
   displayName: string;
   photoURL?: string;
+  isAdmin?: boolean;
 }
