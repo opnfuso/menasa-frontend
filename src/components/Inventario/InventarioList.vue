@@ -1,4 +1,13 @@
 <template>
+  <div class="max-w-screen p-4">
+    <input
+      @keyup="keypress()"
+      type="text"
+      placeholder="Barra de busqueda"
+      class="input input-bordered w-full"
+      v-model="filter"
+    />
+  </div>
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
     v-if="!loading"
@@ -10,7 +19,7 @@
     >
     <div
       class="card w-auto bg-base-100 shadow-xl"
-      v-for="(inventario, index) in inventarios"
+      v-for="(inventario, index) in filteredInventarios"
       :key="index"
     >
       <div class="card-body">
@@ -42,7 +51,9 @@ export default defineComponent({
     return {
       auth: {} as Auth,
       inventarios: [] as Inventario[],
+      filteredInventarios: [] as Inventario[],
       loading: true,
+      filter: "",
     };
   },
   methods: {
@@ -55,11 +66,21 @@ export default defineComponent({
           },
         };
         const response = await getInventarios(config);
-        this.inventarios = response.data;
+        this.inventarios = response.data.filter((data) => {
+          return data.piezas > 0;
+        });
+        this.filteredInventarios = this.inventarios;
         this.loading = false;
       } catch (error) {
         console.error(error);
       }
+    },
+    keypress() {
+      this.filteredInventarios = this.inventarios.filter((inventarios) => {
+        return inventarios.id_medicamento.nombre
+          .toLowerCase()
+          .includes(this.filter.toLowerCase());
+      });
     },
   },
   mounted() {
