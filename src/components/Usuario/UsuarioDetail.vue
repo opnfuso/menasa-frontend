@@ -71,12 +71,13 @@
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
 import { getAuth, type Auth, type User } from "firebase/auth";
-import { getUser } from "@/services/user.service";
+import { getUser, updateUser } from "@/services/user.service";
 import type { InventarioUpdate } from "@/interfaces/inventario.interface";
 import { updateInventario } from "@/services/inventario.service";
 import { updateMedicamento } from "@/services/medicamento.service";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import type { UserUpdate } from "@/interfaces/user.interface";
 
 export default defineComponent({
   name: "inventario-detail",
@@ -107,29 +108,30 @@ export default defineComponent({
       }
     },
     async handleUpdate() {
-      try {
-        Swal.fire({
-          title: "¿Estás seguro?",
-          text: "¿Estás seguro de actualizar el inventario?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Si, actualizar",
-          cancelButtonText: "No, cancelar",
-        }).then(async (result) => {
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Estás seguro de actualizar el perfil?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, actualizar",
+        cancelButtonText: "No, cancelar",
+      }).then(async (result) => {
+        try {
           if (result.value) {
-            this.inventario.lotes.forEach((lote) => {
-              lote.fecha_vencimiento = new Date(lote.fecha_vencimiento_string);
-              lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
-            });
-
-            const inventarioUpdate: InventarioUpdate = {
-              _id: this.inventario._id,
-              piezas: this.inventario.piezas,
-              lotes: this.inventario.lotes,
-              id_medicamento: this.inventario.id_medicamento._id,
+            const userUpdate: UserUpdate = {
+              email: this.usuario.email,
+              displayName: this.usuario.displayName,
+              phoneNumber: this.usuario.phoneNumber,
             };
+
+            if (this.imageObject.size > 0) {
+              const photoURL = await this.uploadImage(this.imageObject);
+
+              userUpdate.photoURL = photoURL;
+            }
+
             const token = await this.auth.currentUser?.getIdToken(true);
             const config = {
               headers: {
@@ -137,43 +139,33 @@ export default defineComponent({
               },
             };
 
-            const response = await updateInventario(
-              this.inventario._id,
-              inventarioUpdate,
-              config
-            );
+            if (this.auth.currentUser && this.auth.currentUser.uid) {
+              const response = await updateUser(
+                this.auth.currentUser?.uid,
+                userUpdate,
+                config
+              );
 
-            const response2 = await updateMedicamento(
-              this.inventario.id_medicamento._id,
-              this.inventario.id_medicamento,
-              config
-            );
-
-            if (
-              response.status == 200 &&
-              response.data.acknowledged == true &&
-              response2.status == 200 &&
-              response2.data.acknowledged == true
-            ) {
-              Swal.fire({
-                title: "Actualizado",
-                text: "El inventario ha sido actualizado correctamente",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-              });
-            } else {
-              Swal.fire({
-                title: "Error",
-                text: "Ha ocurrido un error al actualizar el inventario",
-                icon: "error",
-                confirmButtonText: "Aceptar",
-              });
+              if (response.status === 200) {
+                Swal.fire({
+                  title: "Actualizado",
+                  text: "El inventario ha sido actualizado correctamente",
+                  icon: "success",
+                  confirmButtonText: "Aceptar",
+                });
+              }
             }
           }
-        });
-      } catch (error) {
-        console.error(error);
-      }
+        } catch (error) {
+          console.error(error);
+          Swal.fire({
+            title: "Error",
+            text: "Ha ocurrido un error",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          });
+        }
+      });
     },
     async previewImage($event: Event) {
       const target = $event.target as HTMLInputElement;
