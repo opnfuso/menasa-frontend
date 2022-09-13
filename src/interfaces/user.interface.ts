@@ -35,6 +35,7 @@ export interface UserCreate {
   password: string;
   photoURL: string;
   isAdmin: boolean;
+  disabled: boolean;
 }
 
 export interface UserUpdate {
@@ -43,4 +44,5 @@ export interface UserUpdate {
   displayName: string;
   photoURL?: string;
   isAdmin?: boolean;
+  disabled?: boolean;
 }
