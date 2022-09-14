@@ -43,7 +43,7 @@
           <h3 class="text-xl mb-4 font-semibold">Lote</h3>
           <div class="mb-4 grid grid-cols-1 gap-4">
             <div class="flex flex-col">
-              <label class="mb-2 font-semibold">Identificador</label>
+              <label class="mb-2 font-semibold">Numero de Lote</label>
               <input
                 type="text"
                 class="input w-full"

@@ -70,6 +70,7 @@ export default defineComponent({
           return data.piezas > 0;
         });
         this.filteredInventarios = this.inventarios;
+        this.ordeningData();
         this.loading = false;
       } catch (error) {
         console.error(error);
@@ -81,6 +82,15 @@ export default defineComponent({
           .toLowerCase()
           .includes(this.filter.toLowerCase());
       });
+    },
+    async ordeningData() {
+      try {
+        this.inventarios = this.inventarios.sort((a, b) =>
+          a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
+        );
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   mounted() {
