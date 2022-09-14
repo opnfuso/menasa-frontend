@@ -238,6 +238,7 @@ export default defineComponent({
 
     limpiar() {
       this.inventario = {};
+      this.saveLocal();
     },
   },
   async mounted() {
