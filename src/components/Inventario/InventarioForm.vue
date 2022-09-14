@@ -2,9 +2,12 @@
 <template>
   <main class="flex flex-col pt-6 pb-12 pr-12 pl-12" v-if="!loading">
     <form @submit.prevent="saveInventario()">
-      <div class="grid grid-cols-4 gap-4">
+      <div class="grid grid-cols-7 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Inventario</h1>
-        <button class="btn btn-success min-w-fit">Crear</button>
+        <button class="col-span-2 btn btn-success min-w-fit">Crear</button>
+        <div @click="limpiar()" class="col-span-2 btn btn-error min-w-fit">
+          Limpiar
+        </div>
       </div>
       <!-- Información -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -13,6 +16,7 @@
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Piezas</label>
             <input
+              @input="saveLocal()"
               type="number"
               class="input w-full"
               v-model="inventario.piezas"
@@ -21,16 +25,13 @@
           </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Medicamento</label>
-            <multiselect
-              v-model="medicamento"
-              track-by="nombre"
-              label="nombre"
-              placeholder="Busca un medicamento"
-              :options="medicamentos"
-              :sercheable="true"
-              :allow-empty="false"
-            >
-            </multiselect>
+            <Multiselect
+              v-model="inventario.id_medicamento"
+              @click="saveLocal()"
+              :options="multiselect"
+              :required="true"
+              :searchable="true"
+            />
           </div>
         </div>
       </div>
@@ -45,6 +46,7 @@
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Identificador</label>
               <input
+                @input="saveLocal()"
                 type="text"
                 class="input w-full"
                 v-model="lote.lote"
@@ -56,6 +58,7 @@
                 >Fecha de vencimiento</label
               >
               <input
+                @input="saveLocal()"
                 type="date"
                 class="input w-full"
                 v-model="lote.fecha_vencimiento"
@@ -67,6 +70,7 @@
                 >Fecha de ingreso</label
               >
               <input
+                @input="saveLocal()"
                 type="date"
                 class="input w-full"
                 v-model="lote.fecha_ingreso"
@@ -78,6 +82,7 @@
                 >Cantidad de medicamento</label
               >
               <input
+                @input="saveLocal()"
                 type="number"
                 class="input w-full"
                 v-model="lote.cantidad"
@@ -87,6 +92,7 @@
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Observaciones</label>
               <textarea
+                @input="saveLocal()"
                 class="textarea textarea-bordered"
                 v-model="lote.observaciones"
               ></textarea>
@@ -108,7 +114,7 @@ import type { InventarioCreate } from "@/interfaces/inventario.interface";
 import type { Medicamento } from "@/interfaces/medicamento.interface";
 import { getMedicamentos } from "@/services/medicamento.service";
 import { createInventario } from "@/services/inventario.service";
-import Multiselect from "vue-multiselect";
+import Multiselect from "@vueform/multiselect";
 import Swal from "sweetalert2";
 import { getAuth, type Auth, type User } from "firebase/auth";
 
@@ -122,8 +128,8 @@ export default defineComponent({
       auth: {} as Auth,
       inventario: {} as InventarioCreate,
       medicamentos: [] as Medicamento[],
-      medicamento: null,
       loading: true,
+      multiselect: [] as any,
     };
   },
   methods: {
@@ -138,6 +144,14 @@ export default defineComponent({
         const response = await getMedicamentos(config);
         this.loading = false;
         this.medicamentos = response.data;
+        this.medicamentos.forEach((medicamento) => {
+          const newMultiselect = {
+            value: medicamento._id,
+            label: medicamento.nombre,
+          };
+
+          this.multiselect.push(newMultiselect);
+        });
       } catch (error) {
         console.error(error);
       }
@@ -159,22 +173,23 @@ export default defineComponent({
       };
 
       this.inventario.lotes.splice(0, 0, item);
+      this.saveLocal();
     },
 
     removeLote(index: number) {
-      this.inventario.lotes.splice(index, 1);
+      if (this.inventario.lotes) {
+        this.inventario.lotes.splice(index, 1);
+        if (this.inventario.lotes.length === 0) {
+          delete this.inventario.lotes;
+        }
+        console.log(JSON.stringify(this.inventario));
+      }
+      this.saveLocal();
     },
 
     async saveInventario() {
       try {
-        if (this.medicamento === null) {
-          Swal.fire({
-            title: "Error",
-            text: "Selecciona un medicamento",
-            icon: "error",
-          });
-          return;
-        } else if (this.inventario.lotes === undefined) {
+        if (this.inventario.lotes === undefined) {
           Swal.fire({
             title: "Error",
             text: "Añade por lo menos un lote",
@@ -187,8 +202,6 @@ export default defineComponent({
               Authorization: `Bearer ${token}`,
             },
           };
-          this.inventario.id_medicamento = this.medicamento._id;
-          console.log(this.inventario);
           const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
             Swal.fire("Exito", "Inventario creado", "success");
@@ -198,6 +211,33 @@ export default defineComponent({
         Swal.fire("Error", "Error al crear inventario", "error");
         console.error(error);
       }
+    },
+
+    saveLocal() {
+      if (typeof this.inventario.piezas === "string") {
+        delete this.inventario.piezas;
+      } else if (this.inventario.id_medicamento === null) {
+        delete this.inventario.id_medicamento;
+      }
+
+      if (Object.keys(this.inventario).length === 0) {
+        window.localStorage.removeItem("inventario");
+      } else {
+        window.localStorage.setItem(
+          "inventario",
+          JSON.stringify(this.inventario)
+        );
+      }
+    },
+
+    loadLocal() {
+      if (window.localStorage.getItem("inventario") !== null) {
+        this.inventario = JSON.parse(localStorage.getItem("inventario"));
+      }
+    },
+
+    limpiar() {
+      this.inventario = {};
     },
   },
   async mounted() {
@@ -222,6 +262,8 @@ export default defineComponent({
       .then(async (user) => {
         this.auth = auth;
         this.loading = false;
+        this.loadLocal();
+
         await this.listMedicamentos();
       })
       .catch((error) => {
@@ -234,3 +276,5 @@ export default defineComponent({
   },
 });
 </script>
+
+<style src="@vueform/multiselect/themes/default.css"></style>
