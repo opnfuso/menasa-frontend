@@ -1,3 +1,4 @@
+import { Component } from "@firebase/component";
 import type { RouteRecordRaw } from "vue-router";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -21,6 +22,12 @@ const routes: RouteRecordRaw[] = [
     path: "/medicamento",
     name: "medicamento",
     component: () => import("@/components/Medicamento/MedicamentoList.vue"),
+  },
+  {
+    path: "/medicamento-inventario",
+    name: "Stock Medicamentos",
+    component: () =>
+      import("@/components/Medicamento/MedicamentoStockTable.vue"),
   },
   {
     path: "/login",

@@ -68,7 +68,17 @@ export default defineComponent({
         const response = await getUsers(config);
         this.usuarios = response.data;
         this.filteredUsuarios = this.usuarios;
+        this.ordeningData();
         this.loading = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async ordeningData() {
+      try {
+        this.usuarios = this.usuarios.sort((a, b) =>
+          a.displayName.localeCompare(b.displayName)
+        );
       } catch (error) {
         console.error(error);
       }
