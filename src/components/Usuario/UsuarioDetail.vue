@@ -5,7 +5,6 @@
         <h1 class="col-span-3 text-3xl font-bold mb-8">Usuario</h1>
         <button class="btn btn-success min-w-fit">Guardar</button>
       </div>
-      <!-- Medicamento -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Datos</h2>
         <div class="mb-4 grid grid-cols-1 gap-4">
@@ -36,12 +35,17 @@
               required
             />
           </div>
+          <div class="flex flex-col justify-start">
+            <label class="mb-2 font-semibold">Es Admin</label>
+            <input
+              type="checkbox"
+              class=""
+              v-model="usuario.isAdmin"
+              required
+            />
+          </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Foto de perfil</label>
-            <!-- <div @click="previewImage()" class="btn btn-info max-w-fit mb-4">
-              Elegir imagen
-            </div> -->
-
             <input
               @change="previewImage($event)"
               class="input w-full mb-4 pt-1.5"
@@ -70,21 +74,18 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
-import { getAuth, type Auth, type User } from "firebase/auth";
+import { getAuth, type Auth } from "firebase/auth";
 import { getUser, updateUser } from "@/services/user.service";
-import type { InventarioUpdate } from "@/interfaces/inventario.interface";
-import { updateInventario } from "@/services/inventario.service";
-import { updateMedicamento } from "@/services/medicamento.service";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import type { UserUpdate } from "@/interfaces/user.interface";
+import type { User, UserUpdate } from "@/interfaces/user.interface";
 
 export default defineComponent({
   name: "inventario-detail",
   data() {
     return {
       auth: {} as Auth,
-      usuario: {} as User,
+      usuario: {} as UserUpdate,
       loading: true,
       image: "",
       imageObject: {} as File,
@@ -103,6 +104,7 @@ export default defineComponent({
         const response = await getUser(id, config);
         this.loading = false;
         this.usuario = response.data;
+        console.log(this.usuario);
       } catch (error) {
         console.error(error);
       }

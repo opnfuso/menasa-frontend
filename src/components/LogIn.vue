@@ -77,11 +77,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  type AuthError,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Swal from "sweetalert2";
 
 export default defineComponent({
