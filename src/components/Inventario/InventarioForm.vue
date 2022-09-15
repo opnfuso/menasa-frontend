@@ -143,7 +143,9 @@ export default defineComponent({
         };
         const response = await getMedicamentos(config);
         this.loading = false;
-        this.medicamentos = response.data;
+        this.medicamentos = response.data.filter((data) => {
+          return data.hasInventory === false;
+        });
         this.medicamentos.forEach((medicamento) => {
           const newMultiselect = {
             value: medicamento._id,

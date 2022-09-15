@@ -5,6 +5,8 @@ export interface Medicamento {
   nombre: string;
   compuesto_activo: string;
   laboratorio: string;
+  hasInventory: boolean;
+  disabled: boolean;
 }
 
 export interface MedicamentoUpdateResponse {
