@@ -79,7 +79,7 @@
             />
           </svg>
           <span
-            v-if="notification"
+            v-if="$store.state.notification"
             class="badge badge-xs badge-primary indicator-item"
           ></span>
         </router>
@@ -115,7 +115,6 @@ export default defineComponent({
       auth: {} as Auth,
       loading: true,
       socket: {} as Socket,
-      notification: false,
       isAdmin: false,
     };
   },
@@ -159,9 +158,9 @@ export default defineComponent({
 
         this.socket.on("broadcast", async (data: ReceiveMessage) => {
           if (!this.$store.state.chatFocus) {
-            this.notification = true;
+            this.$store.commit("notificationTrue");
           } else {
-            this.notification = false;
+            this.$store.commit("notificationFalse");
           }
         });
       })

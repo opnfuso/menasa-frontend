@@ -170,7 +170,8 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.$store.commit("true");
+    this.$store.commit("chatFocusTrue");
+    this.$store.commit("notificationFalse");
     const auth = getAuth();
     this.app = getApp();
 
