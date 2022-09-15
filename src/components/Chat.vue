@@ -53,7 +53,11 @@
                   v-bind:href="message.content"
                   target="_blank"
                 >
-                  <img v-bind:src="message.content" alt="Photo" />
+                  <img
+                    @load="scrollToBottom()"
+                    v-bind:src="message.content"
+                    alt="Photo"
+                  />
                 </a>
                 <div
                   v-else
@@ -207,10 +211,7 @@ export default defineComponent({
 
         this.socket.on("broadcast", async (data: ReceiveMessage) => {
           this.messages.push(data);
-          const messages = document.getElementById("messages");
-          if (messages && messages.scrollTop) {
-            messages.scrollTop = messages?.scrollHeight;
-          }
+          this.scrollToBottom();
         });
 
         this.loading = false;
@@ -224,7 +225,7 @@ export default defineComponent({
       });
   },
   unmounted() {
-    this.$store.commit("false");
+    this.$store.commit("chatFocusFalse");
   },
   methods: {
     sendMessage() {
@@ -279,7 +280,9 @@ export default defineComponent({
       }
     },
     scrollToBottom() {
+      console.log("scroll");
       const messages = document.getElementById("messages");
+      console.log(messages?.scrollHeight);
       messages.scrollTop = messages?.scrollHeight;
     },
     keypress(event: KeyboardEvent) {
