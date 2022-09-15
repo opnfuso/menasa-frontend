@@ -76,6 +76,7 @@ import type { User, UserUpdate } from "@/interfaces/user.interface";
 import Swal from "sweetalert2";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "Profile",
@@ -183,7 +184,10 @@ export default defineComponent({
 
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE_USER + image.name
+        import.meta.env.VITE_REF_STORAGE_CHAT +
+          nanoid(36) +
+          "." +
+          this.imageObject.name.split(".").pop()
       );
 
       const res = await uploadBytes(storageRef, image).then(

@@ -77,7 +77,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  type AuthError,
+} from "firebase/auth";
+import Swal from "sweetalert2";
 
 export default defineComponent({
   name: "log-in",
@@ -92,9 +97,49 @@ export default defineComponent({
       try {
         const auth = getAuth();
         await signInWithEmailAndPassword(auth, this.email, this.password);
+        Swal.fire({
+          icon: "success",
+          title: "Inicio de sesión",
+          text: "El inicio de sesión ha sido exitoso",
+        }).then(() => {
+          window.location.reload();
+        });
         this.$router.push("/");
       } catch (error) {
         console.error(error);
+        if (error.name === "FirebaseError") {
+          switch (error.code) {
+            case "auth/wrong-password":
+              Swal.fire({
+                icon: "error",
+                title: "Inicio de sesión",
+                text: "La contraseña es incorrecta",
+              });
+              break;
+
+            case "auth/user-not-found":
+              Swal.fire({
+                icon: "error",
+                title: "Inicio de sesión",
+                text: "Ese usario no existe",
+              });
+              break;
+
+            default:
+              Swal.fire({
+                icon: "error",
+                title: "Inicio de sesión",
+                text: "Hubo un error al iniciar sesión",
+              });
+              break;
+          }
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Inicio de sesión",
+            text: "Hubo un error al iniciar sesión",
+          });
+        }
       }
     },
   },

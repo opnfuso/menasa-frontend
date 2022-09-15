@@ -53,7 +53,11 @@
                   v-bind:href="message.content"
                   target="_blank"
                 >
-                  <img v-bind:src="message.content" alt="Photo" />
+                  <img
+                    @load="scrollToBottom()"
+                    v-bind:src="message.content"
+                    alt="Photo"
+                  />
                 </a>
                 <div
                   v-else
@@ -151,6 +155,7 @@ import type { ReceiveMessage, SendMessage } from "@/interfaces/chat.interface";
 import { getAuth, type Auth, type User } from "firebase/auth";
 import { io, type Socket } from "socket.io-client";
 import { getMessages } from "@/services/chat.service";
+import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "chat",
@@ -170,7 +175,8 @@ export default defineComponent({
     };
   },
   async mounted() {
-    this.$store.commit("true");
+    this.$store.commit("chatFocusTrue");
+    this.$store.commit("notificationFalse");
     const auth = getAuth();
     this.app = getApp();
 
@@ -206,10 +212,7 @@ export default defineComponent({
 
         this.socket.on("broadcast", async (data: ReceiveMessage) => {
           this.messages.push(data);
-          const messages = document.getElementById("messages");
-          if (messages && messages.scrollTop) {
-            messages.scrollTop = messages?.scrollHeight;
-          }
+          this.scrollToBottom();
         });
 
         this.loading = false;
@@ -223,7 +226,7 @@ export default defineComponent({
       });
   },
   unmounted() {
-    this.$store.commit("false");
+    this.$store.commit("chatFocusFalse");
   },
   methods: {
     sendMessage() {
@@ -246,7 +249,10 @@ export default defineComponent({
       const storage = getStorage(this.app);
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE_CHAT + this.imageObject.name
+        import.meta.env.VITE_REF_STORAGE_CHAT +
+          nanoid(36) +
+          "." +
+          this.imageObject.name.split(".").pop()
       );
 
       uploadBytes(storageRef, this.imageObject).then((snapshot) => {

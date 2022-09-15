@@ -11,15 +11,24 @@ const store = createStore({
   state() {
     return {
       chatFocus: false,
+      notification: false,
     };
   },
   mutations: {
-    false(state) {
+    chatFocusFalse(state) {
       state.chatFocus = false;
     },
 
-    true(state) {
+    chatFocusTrue(state) {
       state.chatFocus = true;
+    },
+
+    notificationFalse(state) {
+      state.notification = false;
+    },
+
+    notificationTrue(state) {
+      state.notification = true;
     },
   },
 });
