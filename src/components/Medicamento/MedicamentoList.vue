@@ -1,13 +1,13 @@
 <template>
   <div v-if="!loading" class="overflow-x-auto p-4">
     <div class="grid grid-cols-7 gap-4">
-      <h1 class="col-span-2 text-3xl font-bold mb-8">Medicamentos</h1>
-      <!-- <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
+      <h1 class="col-span-4 text-3xl font-bold mb-8">Medicamentos</h1>
+      <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
         Añadir
       </button>
       <button @click="saveMedicamento()" class="btn btn-success min-w-fit">
         Guardar
-      </button> -->
+      </button>
       <button class="btn btn-error w-full">Eliminar</button>
     </div>
     <div class="max-w-screen p-4">
@@ -22,8 +22,9 @@
     <table class="table table-compact w-full">
       <thead>
         <tr>
-          <!-- <th></th> -->
           <th></th>
+          <!-- <th>N:{{ Nmedicamentos }}</th> -->
+          <!-- <th>U:{{ updateMeds }}</th> -->
           <th>Medicamento</th>
           <th>Precio</th>
           <th>Sal-Compuesto Activo</th>
@@ -31,18 +32,20 @@
           <th>Codigo de Barras</th>
         </tr>
       </thead>
-      <tbody v-for="(medicamento, index) in filteredMedicamentos" :key="index">
+      <!-- nuevos medicamentos -->
+      <tbody v-for="(medicamento, index) in Nmedicamentos" :key="index">
         <tr>
-          <!-- <th>{{ index + 1 }}</th> -->
           <td>
             <input
-              @click="addIndexModifiedMedicamento(index)"
+              v-model="chekedMeds"
+              :value="index"
               type="checkbox"
               class="checkbox"
             />
           </td>
           <td>
             <input
+              @click="modifiedNewValue(medicamento)"
               class="input w-full"
               type="text"
               required="true"
@@ -51,6 +54,7 @@
           </td>
           <td>
             <input
+              @click="modifiedNewValue(medicamento)"
               class="input w-full"
               type="number"
               required="true"
@@ -59,6 +63,7 @@
           </td>
           <td>
             <input
+              @click="modifiedNewValue(medicamento)"
               class="input w-full"
               type="text"
               required="true"
@@ -67,6 +72,7 @@
           </td>
           <td>
             <input
+              @click="modifiedNewValue(medicamento)"
               class="input w-full"
               type="text"
               required="true"
@@ -75,6 +81,66 @@
           </td>
           <td>
             <input
+              @click="modifiedNewValue(medicamento)"
+              class="input w-full"
+              type="number"
+              required="true"
+              v-model="medicamento.codigo_barras"
+            />
+          </td>
+        </tr>
+      </tbody>
+      <!-- medicamentos existentes -->
+      <tbody v-for="(medicamento, index) in filteredMedicamentos" :key="index">
+        <tr>
+          <!-- <th>{{ index + 1 }}</th> -->
+          <td>
+            <input
+              v-model="updateMeds"
+              :value="medicamento"
+              type="checkbox"
+              class="checkbox"
+            />
+          </td>
+          <td>
+            <input
+              @click="modifiedValue(medicamento)"
+              class="input w-full"
+              type="text"
+              required="true"
+              v-model="medicamento.nombre"
+            />
+          </td>
+          <td>
+            <input
+              @click="modifiedValue(medicamento)"
+              class="input w-full"
+              type="number"
+              required="true"
+              v-model="medicamento.precio"
+            />
+          </td>
+          <td>
+            <input
+              @click="modifiedValue(medicamento)"
+              class="input w-full"
+              type="text"
+              required="true"
+              v-model="medicamento.compuesto_activo"
+            />
+          </td>
+          <td>
+            <input
+              @click="modifiedValue(medicamento)"
+              class="input w-full"
+              type="text"
+              required="true"
+              v-model="medicamento.laboratorio"
+            />
+          </td>
+          <td>
+            <input
+              @click="modifiedValue(medicamento)"
               class="input w-full"
               type="number"
               required="true"
@@ -88,10 +154,16 @@
 </template>
 
 <script lang="ts">
-import type { Medicamento } from "@/interfaces/medicamento.interface";
+import type {
+  Medicamento,
+  MedicamentoCreate,
+} from "@/interfaces/medicamento.interface";
 import { getMedicamentos } from "@/services/medicamento.service";
+import { createMedicamento } from "@/services/medicamento.service";
+import { updateMedicamento } from "@/services/medicamento.service";
 import { defineComponent } from "vue";
 import { getAuth, type Auth, type User } from "@firebase/auth";
+import Swal from "sweetalert2";
 import { list } from "@firebase/storage";
 
 export default defineComponent({
@@ -100,9 +172,13 @@ export default defineComponent({
     return {
       auth: {} as Auth,
       medicamentos: [] as Medicamento[],
+      Nmedicamentos: [] as MedicamentoCreate[],
+      Nmedicamento: {} as MedicamentoCreate,
+      medicamento: {} as MedicamentoCreate,
       filteredMedicamentos: [] as Medicamento[],
       filter: "",
-      indexMedsModified: [] as number[],
+      chekedMeds: [] as MedicamentoCreate[],
+      updateMeds: [] as Medicamento[],
       loading: true,
     };
   },
@@ -140,20 +216,58 @@ export default defineComponent({
           .includes(this.filter.toLowerCase());
       });
     },
-    addIndexModifiedMedicamento(index: number) {
+    async addMedicamento() {
       try {
-        
-        this.indexMedsModified.push(index);
-        console.log(this.indexMedsModified);
+        if (this.Nmedicamento === undefined) {
+          this.Nmedicamentos = [];
+        }
+
+        this.Nmedicamentos.push({
+          codigo_barras: 0,
+          precio: 0,
+          nombre: "",
+          compuesto_activo: "",
+          laboratorio: "",
+        });
+        console.log(this.Nmedicamento);
+        this.chekedMeds.push(this.Nmedicamento);
+        console.log(this.chekedMeds);
       } catch (error) {
+        Swal.fire("Error", "Error al crear el medicamento", "error");
         console.error(error);
       }
     },
-    removeIndexModifiedMedicamento(index: number) {
-      try {
-        delete this.indexMedsModified[index];
-        console.log(this.indexMedsModified);
-      } catch (error) {
+    modifiedValue(medicamento: Medicamento) {
+      if (this.updateMeds.indexOf(medicamento) == -1) {
+        this.updateMeds.push(medicamento);
+      }
+    },
+    modifiedNewValue(medicamento: Medicamento) {
+      if (this.chekedMeds.indexOf(medicamento) == -1) {
+        this.chekedMeds.push(medicamento);
+      }
+    },
+    async saveMedicamento() {
+      try{
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        if(this.updateMeds.length !== 0){
+          this.updateMeds.forEach(async element => {
+            console.log(element);
+            await updateMedicamento(element._id,element,config);
+          });
+        }
+        console.log(this.chekedMeds);
+        this.chekedMeds.forEach(async element=>{
+          console.log(JSON.stringify(element));
+          await createMedicamento(element,config);
+        });
+      }catch(error){
+        Swal.fire("Error", "Error al Guardar o Actualizar el/los medicamento/s", "error");
         console.error(error);
       }
     },
