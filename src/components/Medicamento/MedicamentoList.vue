@@ -255,17 +255,27 @@ export default defineComponent({
             Authorization: `Bearer ${token}`,
           },
         };
+        let flag = false;
         if(this.updateMeds.length !== 0){
           this.updateMeds.forEach(async element => {
             console.log(element);
-            await updateMedicamento(element._id,element,config);
+            const response = await updateMedicamento(element._id,element,config);
+            if(response.status !== 200){
+              flag = true;
+            }
           });
         }
         console.log(this.chekedMeds);
         this.chekedMeds.forEach(async element=>{
           console.log(JSON.stringify(element));
-          await createMedicamento(element,config);
+          const response = await createMedicamento(element,config);
+          if (response.status !== 201) {
+            flag = true;
+          }
         });
+        if (flag===false) {
+            Swal.fire("Exito", "Medicamentos Guardados y/o Actualizados", "success");
+          }
       }catch(error){
         Swal.fire("Error", "Error al Guardar o Actualizar el/los medicamento/s", "error");
         console.error(error);
