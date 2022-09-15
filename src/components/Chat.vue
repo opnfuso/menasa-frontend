@@ -155,6 +155,7 @@ import type { ReceiveMessage, SendMessage } from "@/interfaces/chat.interface";
 import { getAuth, type Auth, type User } from "firebase/auth";
 import { io, type Socket } from "socket.io-client";
 import { getMessages } from "@/services/chat.service";
+import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "chat",
@@ -248,7 +249,10 @@ export default defineComponent({
       const storage = getStorage(this.app);
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE_CHAT + this.imageObject.name
+        import.meta.env.VITE_REF_STORAGE_CHAT +
+          nanoid(36) +
+          "." +
+          this.imageObject.name.split(".").pop()
       );
 
       uploadBytes(storageRef, this.imageObject).then((snapshot) => {
@@ -280,9 +284,7 @@ export default defineComponent({
       }
     },
     scrollToBottom() {
-      console.log("scroll");
       const messages = document.getElementById("messages");
-      console.log(messages?.scrollHeight);
       messages.scrollTop = messages?.scrollHeight;
     },
     keypress(event: KeyboardEvent) {
