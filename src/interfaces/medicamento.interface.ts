@@ -5,8 +5,17 @@ export interface Medicamento {
   nombre: string;
   compuesto_activo: string;
   laboratorio: string;
-  hasInventory: boolean;
+  readonly hasInventory: boolean;
   disabled: boolean;
+}
+
+export interface MedicamentoUpdate {
+  codigo_barras: number;
+  precio: number;
+  nombre: string;
+  compuesto_activo: string;
+  laboratorio: string;
+  disabled?: boolean;
 }
 
 export interface MedicamentoUpdateResponse {
