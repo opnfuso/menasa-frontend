@@ -328,6 +328,7 @@ export default defineComponent({
           if (flag === false) {
             Swal.fire("Exito", "Medicamentos Eliminados", "success");
           }
+          window.location.reload();
         });
       } catch (error) {
         console.error(error);
