@@ -37,12 +37,7 @@
           </div>
           <div class="flex flex-col justify-start">
             <label class="mb-2 font-semibold">Es Admin</label>
-            <input
-              type="checkbox"
-              class=""
-              v-model="usuario.isAdmin"
-              required
-            />
+            <input type="checkbox" class="checkbox" v-model="usuario.isAdmin" />
           </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Foto de perfil</label>
@@ -74,7 +69,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
-import { getAuth, type Auth } from "firebase/auth";
+import { getAuth, type Auth, type User as FUser } from "firebase/auth";
 import { getUser, updateUser } from "@/services/user.service";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -90,6 +85,7 @@ export default defineComponent({
       image: "",
       imageObject: {} as File,
       app: {} as FirebaseApp,
+      id: "",
     };
   },
   methods: {
@@ -104,7 +100,6 @@ export default defineComponent({
         const response = await getUser(id, config);
         this.loading = false;
         this.usuario = response.data;
-        console.log(this.usuario);
       } catch (error) {
         console.error(error);
       }
@@ -142,11 +137,7 @@ export default defineComponent({
             };
 
             if (this.auth.currentUser && this.auth.currentUser.uid) {
-              const response = await updateUser(
-                this.auth.currentUser?.uid,
-                userUpdate,
-                config
-              );
+              const response = await updateUser(this.id, userUpdate, config);
 
               if (response.status === 200) {
                 Swal.fire({
@@ -199,7 +190,7 @@ export default defineComponent({
     const auth = getAuth();
     this.app = getApp();
 
-    new Promise<User>((resolve, reject) => {
+    new Promise<FUser>((resolve, reject) => {
       const unsubscribe = auth.onAuthStateChanged(
         (user) => {
           if (user) {
@@ -220,7 +211,8 @@ export default defineComponent({
         this.auth = auth;
         this.loading = false;
         if (typeof this.$route.params.id === "string") {
-          this.loadUsuario(this.$route.params.id);
+          this.id = this.$route.params.id;
+          this.loadUsuario(this.id);
         }
       })
       .catch((error) => {
