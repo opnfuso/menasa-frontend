@@ -198,6 +198,16 @@ export default defineComponent({
 
       return res;
     },
+    async protectPage() {
+      const claims = await this.auth.currentUser?.getIdTokenResult();
+      const admin = claims?.claims.admin;
+
+      if (admin === undefined) {
+        this.$router.push("/");
+      } else if (typeof admin === "boolean" && admin === false) {
+        this.$router.push("/");
+      }
+    },
   },
   mounted() {
     const auth = getAuth();
@@ -225,6 +235,7 @@ export default defineComponent({
         this.loading = false;
         if (typeof this.$route.params.id === "string") {
           this.id = this.$route.params.id;
+          await this.protectPage();
           this.loadUsuario(this.id);
         }
       })

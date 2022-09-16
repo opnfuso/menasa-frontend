@@ -90,6 +90,16 @@ export default defineComponent({
           .includes(this.filter.toLowerCase());
       });
     },
+    async protectPage() {
+      const claims = await this.auth.currentUser?.getIdTokenResult();
+      const admin = claims?.claims.admin;
+
+      if (admin === undefined) {
+        this.$router.push("/");
+      } else if (typeof admin === "boolean" && admin === false) {
+        this.$router.push("/");
+      }
+    },
   },
   mounted() {
     const auth = getAuth();
@@ -113,6 +123,7 @@ export default defineComponent({
       .then(async (user) => {
         this.auth = auth;
         this.loading = false;
+        await this.protectPage();
         this.loadUsuarios();
       })
       .catch((error) => {
