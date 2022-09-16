@@ -35,6 +35,15 @@
               required
             />
           </div>
+          <div class="flex flex-col">
+            <label class="mb-2 font-semibold">Contraseña</label>
+            <input
+              type="password"
+              class="input w-full"
+              v-model="usuario.password"
+              required
+            />
+          </div>
           <div class="flex flex-col justify-start">
             <label class="mb-2 font-semibold">Es Admin</label>
             <input type="checkbox" class="checkbox" v-model="usuario.isAdmin" />
@@ -73,6 +82,8 @@ import { getAuth, type Auth, type User as FUser } from "firebase/auth";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import type { UserCreate } from "@/interfaces/user.interface";
+import { createUser } from "@/services/user.service";
+import { nanoid } from "nanoid";
 
 export default defineComponent({
   name: "inventario-detail",
@@ -100,7 +111,37 @@ export default defineComponent({
         cancelButtonText: "No, cancelar",
       }).then(async (result) => {
         try {
-          console.log(this.usuario);
+          if (result.value) {
+            if (this.usuario.isAdmin === undefined) {
+              this.usuario.isAdmin = false;
+            }
+
+            if (this.imageObject.size > 0) {
+              const photoURL = await this.uploadImage(this.imageObject);
+
+              this.usuario.photoURL = photoURL;
+            }
+
+            this.usuario.disabled = false;
+
+            const token = await this.auth.currentUser?.getIdToken(true);
+            const config = {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            };
+
+            const response = await createUser(this.usuario, config);
+
+            if (response.status === 201) {
+              Swal.fire({
+                title: "Actualizado",
+                text: "El usuario ha sido creado correctamente",
+                icon: "success",
+                confirmButtonText: "Aceptar",
+              });
+            }
+          }
         } catch (error) {
           console.error(error);
           Swal.fire({
@@ -124,7 +165,10 @@ export default defineComponent({
 
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE_USER + image.name
+        import.meta.env.VITE_REF_STORAGE_USER +
+          nanoid(36) +
+          "." +
+          this.imageObject.name.split(".").pop()
       );
 
       const res = await uploadBytes(storageRef, image).then(

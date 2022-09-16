@@ -22,3 +22,8 @@ export const createUser = async (
   user: UserCreate,
   config: AxiosRequestConfig
 ): Promise<AxiosResponse<User>> => await axios.post("/user", user, config);
+
+export const deleteUser = async (
+  id: string,
+  config: AxiosRequestConfig
+): Promise<any> => await axios.delete(`/user/${id}`, config);
