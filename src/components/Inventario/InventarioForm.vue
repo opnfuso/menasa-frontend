@@ -14,16 +14,6 @@
         <h2 class="text-2xl font-semibold mb-4">Información</h2>
         <div class="mb-4 grid grid-cols-1 gap-4">
           <div class="flex flex-col">
-            <label class="mb-2 font-semibold">Piezas</label>
-            <input
-              @input="saveLocal()"
-              type="number"
-              class="input w-full"
-              v-model="inventario.piezas"
-              required
-            />
-          </div>
-          <div class="flex flex-col">
             <label class="mb-2 font-semibold">Medicamento</label>
             <Multiselect
               v-model="inventario.id_medicamento"
@@ -147,12 +137,14 @@ export default defineComponent({
           return data.hasInventory === false;
         });
         this.medicamentos.forEach((medicamento) => {
-          const newMultiselect = {
-            value: medicamento._id,
-            label: medicamento.nombre,
-          };
+          if (medicamento.hasInventory === false) {
+            const newMultiselect = {
+              value: medicamento._id,
+              label: medicamento.nombre,
+            };
 
-          this.multiselect.push(newMultiselect);
+            this.multiselect.push(newMultiselect);
+          }
         });
       } catch (error) {
         console.error(error);

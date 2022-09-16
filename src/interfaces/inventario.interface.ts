@@ -17,7 +17,6 @@ export interface Inventario {
 }
 
 export interface InventarioCreate {
-  piezas?: number;
   id_medicamento?: string;
   lotes?: Lote[];
 }
