@@ -53,8 +53,9 @@
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Piezas</label>
             <input
+              disabled
               type="number"
-              class="input w-full"
+              class="input input-bordered w-full"
               v-model="inventario.piezas"
             />
           </div>

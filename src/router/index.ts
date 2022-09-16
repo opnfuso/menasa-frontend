@@ -58,7 +58,12 @@ const routes: RouteRecordRaw[] = [
     path: "/user/new",
     name: "user-new",
     component: () => import("@/components/Usuario/UsuarioForm.vue"),
-  }
+  },
+  {
+    path: "/",
+    name: "index",
+    component: () => import("@/components/Index.vue"),
+  },
 ];
 
 const router = createRouter({
