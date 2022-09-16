@@ -196,11 +196,13 @@ export default defineComponent({
         };
         const response = await getMedicamentos(config);
         this.medicamentos = response.data;
+
         this.medicamentos.forEach((medicamento) => {
           if (medicamento.disabled === false) {
             this.filteredMedicamentos.push(medicamento);
           }
         });
+
         this.ordeningMeds();
         this.loading = false;
       } catch (error) {
@@ -209,7 +211,7 @@ export default defineComponent({
     },
     async ordeningMeds() {
       try {
-        this.filteredMedicamentos = this.medicamentos.sort((a, b) =>
+        this.filteredMedicamentos = this.filteredMedicamentos.sort((a, b) =>
           a.nombre.localeCompare(b.nombre)
         );
       } catch (error) {
