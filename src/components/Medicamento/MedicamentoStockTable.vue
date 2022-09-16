@@ -72,7 +72,7 @@ export default defineComponent({
     },
     async ordeningInventario() {
       try {
-        this.inventarios = this.inventarios.sort((a, b) =>
+        this.filteredStock = this.inventarios.sort((a, b) =>
           a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
         );
       } catch (error) {
@@ -110,7 +110,6 @@ export default defineComponent({
         this.auth = auth;
         this.loading = false;
         this.loadInventarios();
-        this.ordeningInventario();
       })
       .catch((error) => {
         if (error) {
