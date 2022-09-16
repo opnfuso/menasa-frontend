@@ -20,14 +20,14 @@
           <th>Precio</th>
         </tr>
       </thead>
-      <tbody v-for="(medicamento, index) in filteredMedicamentos" :key="index">
+      <tbody v-for="(inventarios, index) in filteredStock" :key="index">
         <tr>
           <td>
-            {{ medicamento.nombre }}
+            {{ inventarios.id_medicamento.nombre }}
           </td>
-          <td>{{ inventarios.at(index)?.piezas }}</td>
+          <td>{{ inventarios.piezas }}</td>
           <td>
-            {{ medicamento.precio }}
+            {{ inventarios.id_medicamento.precio }}
           </td>
         </tr>
       </tbody>
@@ -36,10 +36,8 @@
 </template>
 
 <script lang="ts">
-import type { Medicamento } from "@/interfaces/medicamento.interface";
 import type { Inventario } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
-import { getMedicamentos } from "@/services/medicamento.service";
 import { defineComponent } from "vue";
 import { getAuth, type Auth, type User } from "@firebase/auth";
 import { list } from "@firebase/storage";
@@ -50,8 +48,7 @@ export default defineComponent({
     return {
       auth: {} as Auth,
       inventarios: [] as Inventario[],
-      medicamentos: [] as Medicamento[],
-      filteredMedicamentos: [] as Medicamento[],
+      filteredStock: [] as Inventario[],
       filter: "",
       loading: true,
     };
@@ -73,32 +70,6 @@ export default defineComponent({
         console.error(error);
       }
     },
-    async loadMedicamentos() {
-      try {
-        const token = await this.auth.currentUser?.getIdToken();
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await getMedicamentos(config);
-        this.medicamentos = response.data;
-        this.filteredMedicamentos = this.medicamentos;
-        this.ordeningMeds();
-        this.loading = false;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async ordeningMeds() {
-      try {
-        this.medicamentos = this.medicamentos.sort((a, b) =>
-          a.nombre.localeCompare(b.nombre)
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    },
     async ordeningInventario() {
       try {
         this.inventarios = this.inventarios.sort((a, b) =>
@@ -109,8 +80,8 @@ export default defineComponent({
       }
     },
     keypress() {
-      this.filteredMedicamentos = this.medicamentos.filter((medicamentos) => {
-        return medicamentos.nombre
+      this.filteredStock = this.inventarios.filter((inventarios) => {
+        return inventarios.id_medicamento.nombre
           .toLowerCase()
           .includes(this.filter.toLowerCase());
       });
@@ -139,9 +110,7 @@ export default defineComponent({
         this.auth = auth;
         this.loading = false;
         this.loadInventarios();
-        this.loadMedicamentos();
         this.ordeningInventario();
-        this.ordeningMeds();
       })
       .catch((error) => {
         if (error) {

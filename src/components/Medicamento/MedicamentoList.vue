@@ -248,7 +248,7 @@ export default defineComponent({
       }
     },
     async saveMedicamento() {
-      try{
+      try {
         const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
@@ -256,28 +256,40 @@ export default defineComponent({
           },
         };
         let flag = false;
-        if(this.updateMeds.length !== 0){
-          this.updateMeds.forEach(async element => {
+        if (this.updateMeds.length !== 0) {
+          this.updateMeds.forEach(async (element) => {
             console.log(element);
-            const response = await updateMedicamento(element._id,element,config);
-            if(response.status !== 200){
+            const response = await updateMedicamento(
+              element._id,
+              element,
+              config
+            );
+            if (response.status !== 200) {
               flag = true;
             }
           });
         }
         console.log(this.chekedMeds);
-        this.chekedMeds.forEach(async element=>{
+        this.chekedMeds.forEach(async (element) => {
           console.log(JSON.stringify(element));
-          const response = await createMedicamento(element,config);
+          const response = await createMedicamento(element, config);
           if (response.status !== 201) {
             flag = true;
           }
         });
-        if (flag===false) {
-            Swal.fire("Exito", "Medicamentos Guardados y/o Actualizados", "success");
-          }
-      }catch(error){
-        Swal.fire("Error", "Error al Guardar o Actualizar el/los medicamento/s", "error");
+        if (flag === false) {
+          Swal.fire(
+            "Exito",
+            "Medicamentos Guardados y/o Actualizados",
+            "success"
+          );
+        }
+      } catch (error) {
+        Swal.fire(
+          "Error",
+          "Error al Guardar o Actualizar el/los medicamento/s",
+          "error"
+        );
         console.error(error);
       }
     },
@@ -316,141 +328,4 @@ export default defineComponent({
       });
   },
 });
-
-// import type { Medicamento } from "@/interfaces/medicamento.interface";
-// import { getMedicamentos } from "@/services/medicamento.service";
-// import { createMedicamento } from "@/services/medicamento.service";
-// import type { MedicamentoCreate } from "@/interfaces/medicamento.interface";
-// import { getAuth, type Auth, type User } from "firebase/auth";
-// import { defineComponent } from "vue";
-// import Multiselect from "vue-multiselect";
-// import Swal from "sweetalert2";
-
-// export default defineComponent({
-//   name: "medicamento-list",
-//   data() {
-//     return {
-//       auth: {} as Auth,
-//       loading: true,
-//       medicamentos: [] as Medicamento[],
-//       medicamento: {} as MedicamentoCreate,
-//       modifieds: [] as number[],
-//       value: null,
-//       length: 0,
-//       new_medicamentos: [] as number[],
-//     };
-//   },
-//   methods: {
-//     async loadMedicamentos() {
-//       try {
-//         const token = await this.auth.currentUser?.getIdToken(true);
-//         const config = {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         };
-//         const response = await getMedicamentos(config);
-//         this.medicamentos = response.data;
-//       } catch (error) {
-//         console.error(error);
-//       }
-//     },
-//     async addMedicamento() {
-//       try {
-//         if (this.medicamento === undefined) {
-//           this.medicamentos = [];
-//         }
-
-//         this.medicamentos.push({
-//           _id: "",
-//           codigo_barras: 0,
-//           precio: 0,
-//           nombre: "",
-//           compuesto_activo: "",
-//           laboratorio: "",
-//         });
-
-//         this.new_medicamentos.push(this.medicamentos.length - 1);
-//         console.log(this.new_medicamentos);
-//       } catch (error) {
-//         Swal.fire("Error", "Error al crear el medicamento", "error");
-//         console.error(error);
-//       }
-//     },
-//     async saveMedicamento() {
-//       try {
-//         const token = await this.auth.currentUser?.getIdToken(true);
-//         const config = {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         };
-//         // if (this.value === null) {
-//         //   Swal.fire({
-//         //     title: "Error",
-//         //     text: "Selecciona un medicamento",
-//         //     icon: "error",
-//         //   });
-//         //   return;
-//         // } else
-//         if (this.medicamento === undefined) {
-//           Swal.fire({
-//             title: "Error",
-//             text: "No se encuentra cambio aparente u agregacion",
-//             icon: "error",
-//           });
-//         } else {
-//           const auth = getAuth();
-//           const token = await auth.currentUser?.getIdToken(true);
-//           const config = {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           };
-//           this.medicamentos.id_medicamento = this.value._id;
-//           console.log(this.inventario);
-//           const response = await createMedicamento(this.inventario, config);
-//           if (response.status === 201) {
-//             Swal.fire("Exito", "Medicamentos Guardados", "success");
-//           }
-//         }
-//       } catch (error) {
-//         Swal.fire("Error", "Error al guardar el/los medicamento/s", "error");
-//         console.error(error);
-//       }
-//     },
-//   },
-//   mounted() {
-//     const auth = getAuth();
-//     new Promise<User>((resolve, reject) => {
-//       const unsubscribe = auth.onAuthStateChanged(
-//         (user) => {
-//           if (user) {
-//             unsubscribe();
-//             resolve(user);
-//           } else {
-//             unsubscribe();
-//             reject();
-//           }
-//         },
-//         (error) => {
-//           unsubscribe();
-//           reject(error);
-//         }
-//       );
-//     })
-//       .then(async (user) => {
-//         this.auth = auth;
-//         this.loading = false;
-//         this.loadMedicamentos();
-//       })
-//       .catch((error) => {
-//         if (error) {
-//           console.error(error);
-//         } else {
-//           this.$router.push("/login");
-//         }
-//       });
-//   },
-// });
 </script>

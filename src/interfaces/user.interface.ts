@@ -14,7 +14,7 @@ interface ProviderData {
 }
 
 interface CustomClaims {
-  admin: boolean
+  admin: boolean;
 }
 
 export interface User {
