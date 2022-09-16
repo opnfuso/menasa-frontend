@@ -1,6 +1,6 @@
 <template>
   <main class="flex flex-col pt-6 pb-12 pr-12 pl-12" v-if="!loading">
-    <form @submit.prevent="handleUpdate()">
+    <form @submit.prevent="handleCreate()">
       <div class="grid grid-cols-4 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Usuario</h1>
         <button class="btn btn-success min-w-fit">Guardar</button>
@@ -13,7 +13,7 @@
             <input
               type="text"
               class="input w-full"
-              v-model="userUpdate.displayName"
+              v-model="usuario.displayName"
               required
             />
           </div>
@@ -22,7 +22,7 @@
             <input
               type="email"
               class="input w-full"
-              v-model="userUpdate.email"
+              v-model="usuario.email"
               required
             />
           </div>
@@ -31,17 +31,13 @@
             <input
               type="text"
               class="input w-full"
-              v-model="userUpdate.phoneNumber"
+              v-model="usuario.phoneNumber"
               required
             />
           </div>
           <div class="flex flex-col justify-start">
             <label class="mb-2 font-semibold">Es Admin</label>
-            <input
-              type="checkbox"
-              class="checkbox"
-              v-model="userUpdate.isAdmin"
-            />
+            <input type="checkbox" class="checkbox" v-model="usuario.isAdmin" />
           </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Foto de perfil</label>
@@ -74,18 +70,16 @@
 import { defineComponent } from "vue";
 import Swal from "sweetalert2";
 import { getAuth, type Auth, type User as FUser } from "firebase/auth";
-import { getUser, updateUser } from "@/services/user.service";
 import { getApp, type FirebaseApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import type { User, UserUpdate } from "@/interfaces/user.interface";
+import type { UserCreate } from "@/interfaces/user.interface";
 
 export default defineComponent({
   name: "inventario-detail",
   data() {
     return {
       auth: {} as Auth,
-      usuario: {} as User,
-      userUpdate: {} as UserUpdate,
+      usuario: {} as UserCreate,
       loading: true,
       image: "",
       imageObject: {} as File,
@@ -94,74 +88,19 @@ export default defineComponent({
     };
   },
   methods: {
-    async loadUsuario(id: string) {
-      try {
-        const token = await this.auth.currentUser?.getIdToken(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await getUser(id, config);
-        this.loading = false;
-        this.usuario = response.data;
-        this.userUpdate = this.usuario;
-        this.userUpdate.isAdmin = this.usuario.customClaims.admin;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async handleUpdate() {
+    async handleCreate() {
       Swal.fire({
         title: "¿Estás seguro?",
-        text: "¿Estás seguro de actualizar el perfil?",
+        text: "¿Estás seguro de crear el perfil?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Si, actualizar",
+        confirmButtonText: "Si, crear",
         cancelButtonText: "No, cancelar",
       }).then(async (result) => {
         try {
-          if (result.value) {
-            const userUpdate: UserUpdate = {
-              uid: this.userUpdate.uid,
-              email: this.userUpdate.email,
-              displayName: this.userUpdate.displayName,
-              phoneNumber: this.userUpdate.phoneNumber,
-              isAdmin: this.userUpdate.isAdmin,
-            };
-
-            if (this.imageObject.size > 0) {
-              const photoURL = await this.uploadImage(this.imageObject);
-
-              userUpdate.photoURL = photoURL;
-            }
-
-            const token = await this.auth.currentUser?.getIdToken(true);
-            const config = {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            };
-
-            if (this.auth.currentUser && this.auth.currentUser.uid) {
-              const response = await updateUser(
-                this.auth.currentUser.uid,
-                userUpdate,
-                config
-              );
-
-              if (response.status === 200) {
-                Swal.fire({
-                  title: "Actualizado",
-                  text: "El inventario ha sido actualizado correctamente",
-                  icon: "success",
-                  confirmButtonText: "Aceptar",
-                });
-              }
-            }
-          }
+          console.log(this.usuario);
         } catch (error) {
           console.error(error);
           Swal.fire({
@@ -232,12 +171,8 @@ export default defineComponent({
     })
       .then(async (user) => {
         this.auth = auth;
-        await this.protectPage();
         this.loading = false;
-        if (typeof this.$route.params.id === "string") {
-          this.id = this.$route.params.id;
-          this.loadUsuario(this.id);
-        }
+        await this.protectPage();
       })
       .catch((error) => {
         if (error) {

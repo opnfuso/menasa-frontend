@@ -12,9 +12,7 @@
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4"
     v-if="!loading"
   >
-    <router-link
-      to="/inventario/new"
-      class="btn btn-primary w-auto shadow-xl h-auto"
+    <router-link to="/user/new" class="btn btn-primary w-auto shadow-xl h-auto"
       >Añadir</router-link
     >
     <div
