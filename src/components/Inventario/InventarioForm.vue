@@ -137,7 +137,10 @@ export default defineComponent({
           return data.hasInventory === false;
         });
         this.medicamentos.forEach((medicamento) => {
-          if (medicamento.hasInventory === false) {
+          if (
+            medicamento.hasInventory === false &&
+            medicamento.disabled === false
+          ) {
             const newMultiselect = {
               value: medicamento._id,
               label: medicamento.nombre,

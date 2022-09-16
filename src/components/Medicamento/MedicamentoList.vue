@@ -8,7 +8,9 @@
       <button @click="saveMedicamento()" class="btn btn-success min-w-fit">
         Guardar
       </button>
-      <button class="btn btn-error w-full">Eliminar</button>
+      <button @click="deleteMedicamentos()" class="btn btn-error w-full">
+        Eliminar
+      </button>
     </div>
     <div class="max-w-screen p-4">
       <input
@@ -157,6 +159,7 @@
 import type {
   Medicamento,
   MedicamentoCreate,
+  MedicamentoUpdate,
 } from "@/interfaces/medicamento.interface";
 import { getMedicamentos } from "@/services/medicamento.service";
 import { createMedicamento } from "@/services/medicamento.service";
@@ -193,7 +196,11 @@ export default defineComponent({
         };
         const response = await getMedicamentos(config);
         this.medicamentos = response.data;
-        this.filteredMedicamentos = this.medicamentos;
+        this.medicamentos.forEach((medicamento) => {
+          if (medicamento.disabled === false) {
+            this.filteredMedicamentos.push(medicamento);
+          }
+        });
         this.ordeningMeds();
         this.loading = false;
       } catch (error) {
@@ -202,7 +209,7 @@ export default defineComponent({
     },
     async ordeningMeds() {
       try {
-        this.medicamentos = this.medicamentos.sort((a, b) =>
+        this.filteredMedicamentos = this.medicamentos.sort((a, b) =>
           a.nombre.localeCompare(b.nombre)
         );
       } catch (error) {
@@ -271,7 +278,6 @@ export default defineComponent({
         }
         console.log(this.chekedMeds);
         this.chekedMeds.forEach(async (element) => {
-          console.log(JSON.stringify(element));
           const response = await createMedicamento(element, config);
           if (response.status !== 201) {
             flag = true;
@@ -291,6 +297,43 @@ export default defineComponent({
           "error"
         );
         console.error(error);
+      }
+    },
+    async deleteMedicamentos() {
+      try {
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        let flag = false;
+
+        this.updateMeds.forEach(async (medicamento) => {
+          const disableMedicamento: MedicamentoUpdate = this.medicamento;
+          disableMedicamento.disabled = true;
+          const response = await updateMedicamento(
+            medicamento._id,
+            disableMedicamento,
+            config
+          );
+
+          if (response.status !== 200) {
+            flag = true;
+          }
+
+          if (flag === false) {
+            Swal.fire("Exito", "Medicamentos Eliminados", "success");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        Swal.fire(
+          "Error",
+          "Error al Guardar o Actualizar el/los medicamento/s",
+          "error"
+        );
       }
     },
   },
