@@ -3,7 +3,7 @@
     <input
       @keyup="keypress()"
       type="text"
-      placeholder="Barra de busqueda por nombre de medicamento"
+      placeholder="Barra de busqueda por nombre"
       class="input input-bordered w-full"
       v-model="filter"
     />

@@ -13,7 +13,7 @@
             <input
               type="text"
               class="input w-full"
-              v-model="usuario.displayName"
+              v-model="userUpdate.displayName"
               required
             />
           </div>
@@ -22,7 +22,7 @@
             <input
               type="email"
               class="input w-full"
-              v-model="usuario.email"
+              v-model="userUpdate.email"
               required
             />
           </div>
@@ -31,13 +31,17 @@
             <input
               type="text"
               class="input w-full"
-              v-model="usuario.phoneNumber"
+              v-model="userUpdate.phoneNumber"
               required
             />
           </div>
           <div class="flex flex-col justify-start">
             <label class="mb-2 font-semibold">Es Admin</label>
-            <input type="checkbox" class="checkbox" v-model="usuario.isAdmin" />
+            <input
+              type="checkbox"
+              class="checkbox"
+              v-model="userUpdate.isAdmin"
+            />
           </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Foto de perfil</label>
@@ -80,7 +84,8 @@ export default defineComponent({
   data() {
     return {
       auth: {} as Auth,
-      usuario: {} as UserUpdate,
+      usuario: {} as User,
+      userUpdate: {} as UserUpdate,
       loading: true,
       image: "",
       imageObject: {} as File,
@@ -100,6 +105,8 @@ export default defineComponent({
         const response = await getUser(id, config);
         this.loading = false;
         this.usuario = response.data;
+        this.userUpdate = this.usuario;
+        this.userUpdate.isAdmin = this.usuario.customClaims.admin;
       } catch (error) {
         console.error(error);
       }
@@ -118,9 +125,11 @@ export default defineComponent({
         try {
           if (result.value) {
             const userUpdate: UserUpdate = {
-              email: this.usuario.email,
-              displayName: this.usuario.displayName,
-              phoneNumber: this.usuario.phoneNumber,
+              uid: this.userUpdate.uid,
+              email: this.userUpdate.email,
+              displayName: this.userUpdate.displayName,
+              phoneNumber: this.userUpdate.phoneNumber,
+              isAdmin: this.userUpdate.isAdmin,
             };
 
             if (this.imageObject.size > 0) {
@@ -137,7 +146,11 @@ export default defineComponent({
             };
 
             if (this.auth.currentUser && this.auth.currentUser.uid) {
-              const response = await updateUser(this.id, userUpdate, config);
+              const response = await updateUser(
+                this.auth.currentUser.uid,
+                userUpdate,
+                config
+              );
 
               if (response.status === 200) {
                 Swal.fire({

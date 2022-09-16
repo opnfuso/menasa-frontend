@@ -13,6 +13,10 @@ interface ProviderData {
   photoURL: string;
 }
 
+interface CustomClaims {
+  admin: boolean
+}
+
 export interface User {
   uid: string;
   email: string;
@@ -26,6 +30,7 @@ export interface User {
   passwordSalt: string;
   tokensValidAfterTime: string;
   providerData: ProviderData[];
+  customClaims: CustomClaims;
 }
 
 export interface UserCreate {
@@ -39,6 +44,7 @@ export interface UserCreate {
 }
 
 export interface UserUpdate {
+  uid: string;
   email: string;
   phoneNumber: string;
   displayName: string;
