@@ -126,6 +126,7 @@ export default defineComponent({
         try {
           if (result.value) {
             const userUpdate: UserUpdate = {
+              uid: this.perfil.uid,
               email: this.perfil.email,
               displayName: this.perfil.displayName,
               phoneNumber: this.perfil.phoneNumber,
@@ -184,7 +185,7 @@ export default defineComponent({
 
       const storageRef = ref(
         storage,
-        import.meta.env.VITE_REF_STORAGE_CHAT +
+        import.meta.env.VITE_REF_STORAGE_USER +
           nanoid(36) +
           "." +
           this.imageObject.name.split(".").pop()

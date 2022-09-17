@@ -11,7 +11,7 @@
       <button @click="saveMedicamento()" class="btn btn-success min-w-fit">
         Guardar
       </button>
-      <button @click="deleteMedicamentos()" class="btn btn-error w-full">
+      <button @click="deleteMedicamentos()" class="btn btn-error min-w-fit">
         Eliminar
       </button>
     </div>
