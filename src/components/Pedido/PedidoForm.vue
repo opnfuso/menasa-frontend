@@ -42,8 +42,6 @@
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
                   v-model="selectedMed"
-                  @change="resetMultiselectLotes()"
-                  @click="setMultiselectLotes(selectedMed)"
                   :options="multiselect"
                   :required="true"
                   :searchable="true"
@@ -239,3 +237,5 @@ export default defineComponent({
   },
 });
 </script>
+
+<style src="@vueform/multiselect/themes/default.css"></style>
