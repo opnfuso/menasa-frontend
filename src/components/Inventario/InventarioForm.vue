@@ -148,6 +148,10 @@ export default defineComponent({
 
             this.multiselect.push(newMultiselect);
           }
+
+          this.multiselect = this.multiselect.sort((a, b) =>
+            a.label.localeCompare(b.label)
+          );
         });
       } catch (error) {
         console.error(error);
