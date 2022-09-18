@@ -56,15 +56,31 @@
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Precio maximo</label>
-              <!-- <input type="number" class="input w-full" required v-model="selectedMed.id_medicamento.precio"/> -->
+              <input
+                v-model="precio"
+                type="number"
+                class="input w-full"
+                required
+              />
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Precio sugerido</label>
-              <input type="number" class="input w-full" required />
+              <input
+                @keyup="setDescuento(precio_sugerido)"
+                v-model="precio_sugerido"
+                type="number"
+                class="input w-full"
+                required
+              />
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Descuento</label>
-              <input type="number" class="input w-full" required />
+              <input
+                v-model="descuento"
+                type="number"
+                class="input w-full"
+                required
+              />
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Precio total</label>
@@ -77,11 +93,14 @@
                   Añadir
                 </button>
               </div>
-              <Multiselect
-                :options="multiselectLotes"
-                :required="true"
-                :searchable="true"
-              />
+              <div class="grid grid-cols-3 gap-4">
+                <Multiselect
+                  :options="multiselectLotes"
+                  :required="true"
+                  :searchable="true"
+                />
+                <input/>
+              </div>
             </div>
             <div class="btn btn-error w-full">Eliminar</div>
           </div>
@@ -114,6 +133,11 @@ export default defineComponent({
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
       loading: true,
+
+      descuento: {} as number,
+      precio_sugerido: {} as number,
+      precio_maximo: {} as number,
+      precio: {} as number,
     };
   },
   methods: {
@@ -165,10 +189,17 @@ export default defineComponent({
       selectedMed.lotes.forEach((lote) => {
         const newMultiselectLote = {
           value: lote.lote,
-          label: lote.lote + " " + lote.fecha_vencimiento,
+          label: lote.lote + " " + lote.fecha_vencimiento_string,
         };
         this.multiselectLotes.push(newMultiselectLote);
       });
+      this.precio = selectedMed.id_medicamento.precio;
+    },
+    setDescuento(precio_sugerido: number) {
+      console.log(precio_sugerido);
+      this.descuento = 100 - (precio_sugerido / this.precio) * 100;
+      this.descuento = this.descuento.toFixed(0);
+      console.log(this.descuento);
     },
     resetMultiselectLotes() {
       this.multiselectLotes.splice(0);
