@@ -167,6 +167,7 @@ export default defineComponent({
       }
     },
     setMultiselectLotes(selectedMed: Inventario) {
+      selectedMed.lotes = selectedMed.lotes.sort((a,b)=> a.fecha_vencimiento.getTime() - b.fecha_vencimiento.getTime(),)
       selectedMed.lotes.forEach((lote) => {
         const newMultiselectLote = {
           value: lote.lote,
