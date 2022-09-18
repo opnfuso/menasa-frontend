@@ -41,6 +41,8 @@
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
+                  @change="resetMultiselectLotes()"
+                  @click="setMultiselectLotes(selectedMed)"
                   v-model="selectedMed"
                   :options="multiselect"
                   :required="true"
