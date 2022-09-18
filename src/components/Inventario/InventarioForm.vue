@@ -183,7 +183,6 @@ export default defineComponent({
         if (this.inventario.lotes.length === 0) {
           delete this.inventario.lotes;
         }
-        console.log(JSON.stringify(this.inventario));
       }
       this.saveLocal();
     },
@@ -208,8 +207,6 @@ export default defineComponent({
             lote.fecha_vencimiento = new Date(lote.fecha_vencimiento_string);
             lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
           });
-
-          console.log(this.inventario);
 
           const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
