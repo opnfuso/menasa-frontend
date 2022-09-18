@@ -24,10 +24,6 @@
             <label for="date" class="mb-2 font-semibold">Fecha de salida</label>
             <input type="date" class="input w-full" required />
           </div>
-          <!-- <div class="flex flex-col">
-            <label for="checkbox" class="mb-2 font-semibold">Completado</label>
-            <input type="checkbox" class="checkbox checkbox-lg" />
-          </div> -->
         </div>
       </div>
       <!-- Contenido -->
@@ -89,17 +85,18 @@
             <div class="flex flex-col">
               <div class="grid grid-cols-7 gap-4">
                 <label class="mb-2 font-semibold">Lote</label>
-                <button class="col-span-2 btn-circle btn-accent min-w-fit">
+                <button class="col-span-2 btn-circle btn-primary min-w-fit">
                   Añadir
                 </button>
               </div>
               <div class="grid grid-cols-3 gap-4">
                 <Multiselect
+                  :v-model="lote_selected"
                   :options="multiselectLotes"
                   :required="true"
                   :searchable="true"
                 />
-                <input/>
+                <input type="number" class="input w-full" required/>
               </div>
             </div>
             <div class="btn btn-error w-full">Eliminar</div>
@@ -115,7 +112,7 @@
 import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
-import type { Inventario } from "@/interfaces/inventario.interface";
+import type { Inventario, InventarioCreate } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 
 export default defineComponent({
@@ -129,6 +126,7 @@ export default defineComponent({
       multiselect: [] as any,
       multiselectLotes: [] as any,
       selectedMed: {} as Inventario,
+      lote_selected: {} as Inventario,
       inventarios: [] as Inventario[],
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
@@ -138,6 +136,9 @@ export default defineComponent({
       precio_sugerido: {} as number,
       precio_maximo: {} as number,
       precio: {} as number,
+
+      newLotes:[] as InventarioCreate[],
+      newLote: {} as InventarioCreate,
     };
   },
   methods: {
@@ -188,7 +189,7 @@ export default defineComponent({
     setMultiselectLotes(selectedMed: Inventario) {
       selectedMed.lotes.forEach((lote) => {
         const newMultiselectLote = {
-          value: lote.lote,
+          value: lote,
           label: lote.lote + " " + lote.fecha_vencimiento_string,
         };
         this.multiselectLotes.push(newMultiselectLote);
@@ -203,6 +204,19 @@ export default defineComponent({
     },
     resetMultiselectLotes() {
       this.multiselectLotes.splice(0);
+    },
+    async addLote(){
+      try{
+        if(this.newLote === undefined)
+        {
+          this.newLotes=[];
+        }
+        this.newLotes.push({
+          
+        });
+      }catch(error){
+        console.error(error);
+      }
     },
   },
   mounted() {
