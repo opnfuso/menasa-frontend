@@ -51,7 +51,7 @@
                 @input="saveLocal()"
                 type="date"
                 class="input w-full"
-                v-model="lote.fecha_vencimiento"
+                v-model="lote.fecha_vencimiento_string"
                 required
               />
             </div>
@@ -63,7 +63,7 @@
                 @input="saveLocal()"
                 type="date"
                 class="input w-full"
-                v-model="lote.fecha_ingreso"
+                v-model="lote.fecha_ingreso_string"
                 required
               />
             </div>
@@ -205,9 +205,15 @@ export default defineComponent({
             lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
           });
 
+          console.log(this.inventario);
+
           const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
-            Swal.fire("Exito", "Inventario creado", "success");
+            Swal.fire("Exito", "Inventario creado", "success").then(() => {
+              this.inventario = {};
+              this.saveLocal();
+              this.$router.push("/inventario");
+            });
           }
         }
       } catch (error) {
