@@ -12,17 +12,19 @@
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Nombre</label>
             <input
-              class="input w-full"
+              class="input input-bordered w-full"
               type="text"
               v-model="inventario.id_medicamento.nombre"
+              disabled
             />
           </div>
           <div class="flex flex-col">
             <label class="mb-2 font-semibold">Compuesto Activo</label>
             <input
-              class="input w-full"
+              class="input input-bordered w-full"
               type="text"
               v-model="inventario.id_medicamento.compuesto_activo"
+              disabled
             />
           </div>
           <div class="flex flex-col">
@@ -30,8 +32,9 @@
             <input
               type="number"
               min="0"
-              class="input w-full"
+              class="input input-bordered w-full"
               v-model="inventario.id_medicamento.codigo_barras"
+              disabled
             />
           </div>
           <div class="flex flex-col">
@@ -40,8 +43,9 @@
               type="number"
               min="0"
               step="0.01"
-              class="input w-full"
+              class="input input-bordered w-full"
               v-model="inventario.id_medicamento.precio"
+              disabled
             />
           </div>
         </div>
@@ -201,18 +205,7 @@ export default defineComponent({
               config
             );
 
-            const response2 = await updateMedicamento(
-              this.inventario.id_medicamento._id,
-              this.inventario.id_medicamento,
-              config
-            );
-
-            if (
-              response.status == 200 &&
-              response.data.acknowledged == true &&
-              response2.status == 200 &&
-              response2.data.acknowledged == true
-            ) {
+            if (response.status == 200 && response.data.acknowledged == true) {
               Swal.fire({
                 title: "Actualizado",
                 text: "El inventario ha sido actualizado correctamente",
