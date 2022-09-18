@@ -56,12 +56,7 @@
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Precio maximo</label>
-              <input
-                type="number"
-                class="input w-full"
-                required
-                v-model="selectedMed.id_medicamento.precio"
-              />
+              <!-- <input type="number" class="input w-full" required v-model="selectedMed.id_medicamento.precio"/> -->
             </div>
             <div class="flex flex-col">
               <label class="mb-2 font-semibold">Precio sugerido</label>
@@ -167,7 +162,6 @@ export default defineComponent({
       }
     },
     setMultiselectLotes(selectedMed: Inventario) {
-      selectedMed.lotes = selectedMed.lotes.sort((a,b)=> a.fecha_vencimiento.getTime() - b.fecha_vencimiento.getTime(),)
       selectedMed.lotes.forEach((lote) => {
         const newMultiselectLote = {
           value: lote.lote,
