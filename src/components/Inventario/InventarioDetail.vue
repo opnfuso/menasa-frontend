@@ -205,7 +205,7 @@ export default defineComponent({
               config
             );
 
-            if (response.status == 200 && response.data.acknowledged == true) {
+            if (response.status == 200) {
               Swal.fire({
                 title: "Actualizado",
                 text: "El inventario ha sido actualizado correctamente",
