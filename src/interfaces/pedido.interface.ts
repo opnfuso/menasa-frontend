@@ -6,7 +6,7 @@ interface Medicamento {
   precio_sugerido: number;
   descuento: number;
   precio_total: number;
-  id_inventario: Inventario[];
+  id_inventario: Inventario;
 }
 
 export default interface Pedido {
