@@ -199,6 +199,12 @@ export default defineComponent({
               Authorization: `Bearer ${token}`,
             },
           };
+
+          this.inventario.lotes.forEach((lote) => {
+            lote.fecha_vencimiento = new Date(lote.fecha_vencimiento_string);
+            lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
+          });
+
           const response = await createInventario(this.inventario, config);
           if (response.status === 201) {
             Swal.fire("Exito", "Inventario creado", "success");
