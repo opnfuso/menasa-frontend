@@ -1,6 +1,6 @@
 import type { Inventario } from "./inventario.interface";
 
-interface Medicamento {
+export interface Medicamento {
   piezas: number;
   precio_maximo: number;
   precio_sugerido: number;
@@ -9,7 +9,7 @@ interface Medicamento {
   id_inventario: Inventario;
 }
 
-export default interface Pedido {
+export interface Pedido {
   _id: string;
   cliente: string;
   completado: boolean;

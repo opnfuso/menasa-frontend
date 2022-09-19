@@ -34,7 +34,7 @@
               >Medicamentos Faltantes</router-link
             >
           </li>
-          <li><router-link to="/pedido/new">Pedidos</router-link></li>
+          <li><router-link to="/pedido">Pedidos</router-link></li>
           <li><router-link to="/chat">Chat</router-link></li>
           <li v-if="isAdmin">
             <router-link to="/historial">Historial</router-link>

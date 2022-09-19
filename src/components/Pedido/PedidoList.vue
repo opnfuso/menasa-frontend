@@ -25,8 +25,7 @@
       <div class="card-body">
         <h2 class="card-title">Pedido # {{ index + 1 }}</h2>
         <p>Cliente: {{ pedido.cliente }}</p>
-        <p>Fecha de Entrada: {{ pedido.fecha_entrada }}</p>
-        <p>Fecha de Salida: {{ pedido.fecha_salida }}</p>
+        <p>Fecha de Entrada: {{ pedido.fecha_entrada.toLocaleString() }}</p>
         <div class="card-actions">
           <button class="btn btn-primary">Editar</button>
         </div>
@@ -38,7 +37,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { getAuth, type Auth, type User } from "firebase/auth";
-import type Pedido from "@/interfaces/pedido.interface";
+import type { Pedido } from "@/interfaces/pedido.interface";
 import { getPedidos } from "@/services/pedidos.service";
 
 export default defineComponent({
@@ -65,6 +64,12 @@ export default defineComponent({
         this.pedidos = response.data.filter((data) => {
           return data.completado === false;
         });
+
+        this.pedidos.forEach((pedido) => {
+          pedido.fecha_entrada = new Date(pedido.fecha_entrada);
+          pedido.fecha_salida = new Date(pedido.fecha_salida);
+        });
+
         this.filteredPedidos = this.pedidos;
         this.ordeningData();
         this.loading = false;
@@ -82,7 +87,7 @@ export default defineComponent({
     async ordeningData() {
       try {
         this.pedidos = this.pedidos.sort(
-          (a, b) => a.fecha_salida.getDate() - b.fecha_salida.getDate()
+          (a, b) => Number(b.fecha_salida) - Number(a.fecha_salida)
         );
       } catch (error) {
         console.error(error);
