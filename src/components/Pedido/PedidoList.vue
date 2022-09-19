@@ -3,7 +3,7 @@
     <input
       @keyup="keypress()"
       type="text"
-      placeholder="Barra de busqueda por nombre de medicamento"
+      placeholder="Cliente..."
       class="input input-bordered w-full"
       v-model="filter"
     />
@@ -13,26 +13,22 @@
     v-if="!loading"
   >
     <router-link
-      to="/inventario/new"
+      to="/pedido/new"
       class="btn btn-primary w-auto shadow-xl h-auto"
       >Añadir</router-link
     >
     <div
       class="card w-auto bg-base-100 shadow-xl"
-      v-for="(inventario, index) in filteredInventarios"
+      v-for="(pedido, index) in filteredPedidos"
       :key="index"
     >
       <div class="card-body">
-        <h2 class="card-title">Inventario # {{ index + 1 }}</h2>
-        <p>Medicamento: {{ inventario.id_medicamento.nombre }}</p>
-        <p>Piezas Totales: {{ inventario.piezas }}</p>
+        <h2 class="card-title">Pedido # {{ index + 1 }}</h2>
+        <p>Cliente: {{ pedido.cliente }}</p>
+        <p>Fecha de Entrada: {{ pedido.fecha_entrada }}</p>
+        <p>Fecha de Salida: {{ pedido.fecha_salida }}</p>
         <div class="card-actions">
-          <button
-            class="btn btn-primary"
-            @click="$router.push(`/inventario/${inventario._id}`)"
-          >
-            Editar
-          </button>
+          <button class="btn btn-primary">Editar</button>
         </div>
       </div>
     </div>
@@ -41,23 +37,23 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import type { Inventario } from "@/interfaces/inventario.interface";
-import { getInventarios } from "@/services/inventario.service";
 import { getAuth, type Auth, type User } from "firebase/auth";
+import type Pedido from "@/interfaces/pedido.interface";
+import { getPedidos } from "@/services/pedidos.service";
 
 export default defineComponent({
-  name: "inventario-list",
+  name: "pedidolist-list",
   data() {
     return {
       auth: {} as Auth,
-      inventarios: [] as Inventario[],
-      filteredInventarios: [] as Inventario[],
+      pedidos: [] as Pedido[],
+      filteredPedidos: [] as Pedido[],
       loading: true,
       filter: "",
     };
   },
   methods: {
-    async loadInventarios() {
+    async loadPedidos() {
       try {
         const token = await this.auth.currentUser?.getIdToken();
         const config = {
@@ -65,11 +61,11 @@ export default defineComponent({
             Authorization: `Bearer ${token}`,
           },
         };
-        const response = await getInventarios(config);
-        this.inventarios = response.data.filter((data) => {
-          return data.piezas > 0;
+        const response = await getPedidos(config);
+        this.pedidos = response.data.filter((data) => {
+          return data.completado === false;
         });
-        this.filteredInventarios = this.inventarios;
+        this.filteredPedidos = this.pedidos;
         this.ordeningData();
         this.loading = false;
       } catch (error) {
@@ -77,16 +73,16 @@ export default defineComponent({
       }
     },
     keypress() {
-      this.filteredInventarios = this.inventarios.filter((inventarios) => {
-        return inventarios.id_medicamento.nombre
+      this.filteredPedidos = this.pedidos.filter((pedidos) => {
+        return pedidos.cliente
           .toLowerCase()
           .includes(this.filter.toLowerCase());
       });
     },
     async ordeningData() {
       try {
-        this.inventarios = this.inventarios.sort((a, b) =>
-          a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
+        this.pedidos = this.pedidos.sort(
+          (a, b) => a.fecha_salida.getDate() - b.fecha_salida.getDate()
         );
       } catch (error) {
         console.error(error);
@@ -115,7 +111,7 @@ export default defineComponent({
       .then(async (user) => {
         this.auth = auth;
         this.loading = false;
-        this.loadInventarios();
+        this.loadPedidos();
       })
       .catch((error) => {
         if (error) {

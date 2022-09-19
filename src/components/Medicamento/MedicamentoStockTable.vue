@@ -20,7 +20,7 @@
           <th>Precio</th>
         </tr>
       </thead>
-      <tbody v-for="(inventarios, index) in filteredStock" :key="index">
+      <tbody v-for="(inventarios, index) in stock" :key="index">
         <tr>
           <td>
             {{ inventarios.id_medicamento.nombre }}
@@ -49,6 +49,7 @@ export default defineComponent({
       auth: {} as Auth,
       inventarios: [] as Inventario[],
       filteredStock: [] as Inventario[],
+      stock: [] as Inventario[],
       filter: "",
       loading: true,
     };
@@ -75,6 +76,11 @@ export default defineComponent({
         this.filteredStock = this.inventarios.sort((a, b) =>
           a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
         );
+        this.filteredStock.forEach((inventario)=>{
+          if (inventario.piezas > 0) {
+            this.stock.push(inventario);
+          }
+        });
       } catch (error) {
         console.error(error);
       }
