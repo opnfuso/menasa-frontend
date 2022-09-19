@@ -19,6 +19,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/components/Inventario/InventarioDetail.vue"),
   },
   {
+    path: "/inventario/faltante",
+    name: "inventario-faltante",
+    component: () => import("@/components/Inventario/Inventario_Faltantes.vue"),
+  },
+  {
     path: "/medicamento",
     name: "medicamento",
     component: () => import("@/components/Medicamento/MedicamentoList.vue"),

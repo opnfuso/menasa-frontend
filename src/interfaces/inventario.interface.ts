@@ -1,6 +1,6 @@
 import type { Medicamento } from "./medicamento.interface";
 
-interface Lote {
+export interface Lote {
   fecha_vencimiento: Date;
   fecha_vencimiento_string: string;
   fecha_ingreso: Date;
