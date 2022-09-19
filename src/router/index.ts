@@ -74,6 +74,11 @@ const routes: RouteRecordRaw[] = [
     name: "pedido-new",
     component: () => import("@/components/Pedido/PedidoForm.vue"),
   },
+  {
+    path: "/historial",
+    name: "historial",
+    component: () => import("@/components/Historial.vue"),
+  },
 ];
 
 const router = createRouter({

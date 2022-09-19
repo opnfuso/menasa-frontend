@@ -57,7 +57,10 @@
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
+<<<<<<< HEAD
                   @change="setMedicamento(index)"
+=======
+>>>>>>> 67c90871fa996ce6423da04b1dc59d05fec08377
                   v-model="pedido.medicamentos[index].id_inventario"
                   :options="multiselect"
                   :required="true"
@@ -239,6 +242,7 @@ export default defineComponent({
         console.error(error);
       }
     },
+<<<<<<< HEAD
     setMedicamento(index: number) {
       console.log(this.pedido.medicamentos[index].id_inventario);
       this.loadLotes(this.pedido.medicamentos[index].id_inventario);
@@ -264,6 +268,8 @@ export default defineComponent({
       console.log(lote);
     },
 
+=======
+>>>>>>> 67c90871fa996ce6423da04b1dc59d05fec08377
     // setMultiselectLotes(selectedMed: Inventario) {
     //   selectedMed.lotes.forEach((lote) => {
     //     const newMultiselectLote = {
@@ -285,13 +291,13 @@ export default defineComponent({
     // },
     async savePedido() {
       try {
-        const token = await this.auth.currentUser?.getIdToken(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
         console.log(this.pedido);
+        // const token = await this.auth.currentUser?.getIdToken(true);
+        // const config = {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // };
       } catch (error) {
         Swal.fire(
           "Error",
