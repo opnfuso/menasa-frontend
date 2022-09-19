@@ -2,7 +2,7 @@
   <div v-if="!loading" class="overflow-x-auto p-4">
     <div class="grid grid-cols-7 gap-4">
       <h1 class="col-span-3 text-3xl font-bold mb-8">Medicamentos</h1>
-        <input id="archivoExcel" type="file" @change="subirExcel()"/>
+      <!-- <input id="archivoExcel" type="file" @change="subirExcel()" /> -->
       <button @click="excel()" class="btn btn-success min-w-fit">Excel</button>
       <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
         Añadir
@@ -169,7 +169,8 @@ import { updateMedicamento } from "@/services/medicamento.service";
 import { defineComponent } from "vue";
 import { getAuth, type Auth, type User } from "@firebase/auth";
 import Swal from "sweetalert2";
-import { list } from "@firebase/storage";
+
+import * as XLSX from "xlsx";
 
 export default defineComponent({
   name: "medicamento-list",
@@ -345,6 +346,21 @@ export default defineComponent({
           "error"
         );
       }
+    },
+    async excel() {
+      const meds: any = this.filteredMedicamentos;
+      meds.forEach((med) => {
+        delete med._id;
+        delete med.disabled;
+        delete med.hasInventory;
+        delete med.__v;
+      });
+
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(meds);
+      XLSX.utils.book_append_sheet(workbook, worksheet);
+
+      await XLSX.writeFile(workbook, "medicamentos.xlsx");
     },
   },
   mounted() {
