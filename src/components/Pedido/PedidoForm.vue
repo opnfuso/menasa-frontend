@@ -58,7 +58,7 @@
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
                   v-model="inventario"
-                  @click="loadLotes(medicamento.id_inventario)"
+                  @click="loadLotes()"
                   :options="multiselect"
                   :required="true"
                   :searchable="true"
@@ -117,7 +117,7 @@
                 <div class="btn btn-info w-full" @click="addLote()">Añadir</div>
               </div>
               <div
-                class="grid grid-cols-3 gap-4"
+                class="grid grid-cols-3 gap-8 mt-5"
                 v-for="(lote, indexLote) in lotes"
                 :key="indexLote"
               >
@@ -128,6 +128,7 @@
                   :searchable="true"
                 />
                 <input type="number" class="input w-full" required />
+                <div class="btn btn-error w-full">Eliminar</div>
               </div>
             </div>
             <div class="btn btn-error w-full">Eliminar</div>
@@ -166,18 +167,10 @@ export default defineComponent({
       lotes: [] as Lote[],
       newLote: {} as Lote,
       inventario: {} as Inventario,
-      // lote_selected: {} as Inventario,
       inventarios: [] as Inventario[],
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
-      nlotes: {} as number,
-      // descuento: {} as number,
-      // precio_sugerido: {} as number,
-      // precio_maximo: {} as number,
-      // precio: {} as number,
 
-      // newLotes: [] as InventarioCreate[],
-      // newLote: {} as InventarioCreate,
       pedido: {} as PedidoCreate,
       medicamentos: {} as Inventario,
       loading: true,
@@ -229,7 +222,7 @@ export default defineComponent({
     },
     setMedicamento(index: number) {
       console.log(this.pedido.medicamentos[index].id_inventario);
-      this.loadLotes(this.pedido.medicamentos[index].id_inventario);
+      this.loadLotes();
     },
 
     loadLotes() {
@@ -249,29 +242,6 @@ export default defineComponent({
       });
     },
 
-    setLote(lote: Lote) {
-      console.log(lote);
-    },
-
-    // setMultiselectLotes(selectedMed: Inventario) {
-    //   selectedMed.lotes.forEach((lote) => {
-    //     const newMultiselectLote = {
-    //       value: lote,
-    //       label: lote.lote + " " + lote.fecha_vencimiento_string +"("+lote.cantidad+")",
-    //     };
-    //     this.multiselectLotes.push(newMultiselectLote);
-    //   });
-    //   this.precio = selectedMed.id_medicamento.precio;
-    // },
-    // setDescuento(precio_sugerido: number) {
-    //   console.log(precio_sugerido);
-    //   this.descuento = 100 - (precio_sugerido / this.precio) * 100;
-    //   this.descuento = this.descuento.toFixed(0);
-    //   console.log(this.descuento);
-    // },
-    // resetMultiselectLotes() {
-    //   this.multiselectLotes.splice(0);
-    // },
     async savePedido() {
       try {
         console.log(this.pedido);
@@ -301,7 +271,7 @@ export default defineComponent({
           precio_sugerido: 0,
           descuento: 0,
           precio_total: 0,
-          id_inventario: this.medicamentos,
+          id_inventario:  this.inventario,
         });
       } catch (error) {
         console.error(error);
