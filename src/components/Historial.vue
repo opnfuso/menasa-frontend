@@ -16,70 +16,65 @@
       <tbody v-for="(historial, index) in historials" :key="index">
         <tr>
           <td>
-            <input
-              v-model="historial.userId"
-              type="text"
-              class="input w-full"
-              disabled
-            />
+            <div class="link">
+              <router-link :to="`/users/${historial.userId}`">{{
+                historial.userId.displayName
+              }}</router-link>
+            </div>
           </td>
           <td>
-            <input
-              v-model="historial.action"
-              class="input w-full"
-              type="text"
-              disabled
-            />
+            <div>{{ historial.action }}</div>
           </td>
           <td>
-            <input
-              v-model="historial.createdAtString"
-              type="date"
-              class="input input-bordered w-full"
-              disabled
-            />
+            <div>{{ historial.createdAt.toLocaleString() }}</div>
           </td>
           <td>
-            <input
-              v-model="historial.category"
-              class="input w-full"
-              type="text"
-              disabled
-            />
+            <div>{{ historial.category }}</div>
           </td>
           <td>
-            <input
+            <div
               v-if="
+                historial.id_inventario === null ||
+                historial.id_medicamento === null ||
+                historial.id_pedido === null ||
+                historial.id_user === null
+              "
+            >
+              Eliminado
+            </div>
+            <div
+              v-else-if="
                 historial.category === 'inventario' && historial.id_inventario
               "
-              v-model="historial.id_inventario._id"
-              class="input w-full"
-              type="text"
-              disabled
-            />
-            <input
+              class="link"
+            >
+              <router-link :to="`/inventario/${historial.id_inventario._id}`">{{
+                historial.id_inventario._id
+              }}</router-link>
+            </div>
+            <div
               v-else-if="historial.category === 'pedido' && historial.id_pedido"
-              v-model="historial.id_pedido._id"
-              class="input w-full"
-              type="text"
-              disabled
-            />
-            <input
+              class="link"
+            >
+              <router-link :to="`/pedido/${historial.id_pedido._id}`">{{
+                historial.id_pedido._id
+              }}</router-link>
+            </div>
+            <div
               v-else-if="
                 historial.category === 'medicamento' && historial.id_medicamento
               "
-              v-model="historial.id_medicamento._id"
-              class="input w-full"
-              type="text"
-              disabled
-            />
-            <input
-              v-else-if="historial.category === 'user'"
-              v-model="historial.id_user"
-              class="input w-full"
-              type="text"
-              disabled
-            />
+              class="link"
+            >
+              <router-link :to="`/medicamento`">{{
+                historial.id_medicamento._id
+              }}</router-link>
+            </div>
+            <div v-else-if="historial.category === 'user'" class="link">
+              <router-link :to="`/users/${historial.id_user}`">{{
+                historial.id_user
+              }}</router-link>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -93,6 +88,7 @@ import { getAuth, type Auth, type User } from "@firebase/auth";
 import Swal from "sweetalert2";
 import { getHistorial } from "@/services/historial.service";
 import type { Historial } from "@/interfaces/historial.interface";
+import { getUsers } from "@/services/user.service";
 
 export default defineComponent({
   name: "medicamento-list",
@@ -116,16 +112,20 @@ export default defineComponent({
         const response = await getHistorial(config);
         this.historials = response.data;
 
+        const response2 = await getUsers(config);
+        const users = response2.data;
+
         this.historials.forEach((historial) => {
           historial.createdAt = new Date(historial.createdAt);
-          historial.createdAtString = historial.createdAt
-            .toISOString()
-            .split("T")[0];
+          const uid = historial.userId;
+          const usr = users.find((user) => user.uid === uid);
+
+          if (usr) {
+            historial.userId = usr;
+          }
         });
 
         this.ordeningHistorial();
-
-        console.log(this.historials);
 
         this.loading = false;
       } catch (error) {
@@ -135,7 +135,7 @@ export default defineComponent({
     async ordeningHistorial() {
       try {
         this.historials = this.historials.sort((a, b) => {
-          return Number(a.createdAt) - Number(b.createdAt);
+          return Number(b.createdAt) - Number(a.createdAt);
         });
       } catch (error) {
         console.error(error);

@@ -5,11 +5,10 @@ import type { User } from "./user.interface";
 
 export interface Historial {
   _id: string;
-  userId: string;
+  userId: User;
   category: string;
   action: string;
   createdAt: Date;
-  createdAtString?: string;
   id_medicamento?: Medicamento;
   id_inventario?: Inventario;
   id_pedido?: Pedido;
