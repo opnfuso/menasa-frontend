@@ -2,6 +2,7 @@
   <div v-if="!loading" class="overflow-x-auto p-4">
     <div class="grid grid-cols-7 gap-4">
       <h1 class="col-span-3 text-3xl font-bold mb-8">Medicamentos</h1>
+        <input id="archivoExcel" type="file" @change="subirExcel()"/>
       <button @click="excel()" class="btn btn-success min-w-fit">Excel</button>
       <button @click="addMedicamento()" class="btn btn-primary min-w-fit">
         Añadir
