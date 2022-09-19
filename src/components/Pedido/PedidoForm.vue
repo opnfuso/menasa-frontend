@@ -120,7 +120,7 @@
               </div>
               <div
                 class="grid grid-cols-3 gap-8 mt-5"
-                v-for="(lote, indexLote) in medicamento.id_inventario.lotes"
+                v-for="(lote, indexLote) in medicamento.inventario.lotes"
                 :key="indexLote"
               >
                 <Multiselect
@@ -136,10 +136,17 @@
                   class="input w-full"
                   required
                 />
-                <div class="btn btn-error w-full">Eliminar</div>
+                <div
+                  @click="deleteLote(index, indexLote)"
+                  class="btn btn-error w-full"
+                >
+                  Eliminar
+                </div>
               </div>
             </div>
-            <div class="btn btn-error w-full">Eliminar</div>
+            <div @click="deleteMedicamento(index)" class="btn btn-error w-full">
+              Eliminar
+            </div>
           </div>
           <div class="divider"></div>
         </div>
@@ -228,8 +235,8 @@ export default defineComponent({
     },
     loadLotes(index: number) {
       this.lotes = this.medicamentos.lotes;
-      this.pedido.medicamentos[index].id_inventario = this.medicamentos;
-      this.pedido.medicamentos[index].id_inventario.lotes = [];
+      this.pedido.medicamentos[index].inventario = this.medicamentos;
+      this.pedido.medicamentos[index].inventario.lotes = [];
       this.multiselectLotes = [];
       if (this.lotes.length > 0) {
         this.lotes.forEach((lote) => {
@@ -249,7 +256,7 @@ export default defineComponent({
     },
     async savePedido() {
       try {
-        console.log(this.pedido);
+        // console.log(this.pedido);
         const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
@@ -257,22 +264,45 @@ export default defineComponent({
           },
         };
 
-        this.pedido.medicamentos.forEach((medicamento) => {
-          const inventario = this.inventarios.find(
-            (inventario) => inventario._id === medicamento.id_inventario._id
+        const response = await getInventarios(config);
+        const inventarios = response.data;
+
+        this.pedido.medicamentos.forEach(async (medicamento) => {
+          const inventario = inventarios.find(
+            (inventario) => inventario._id === medicamento.inventario._id
           );
 
-          // const response = await updateInventario();
+          if (inventario) {
+            medicamento.inventario.lotes.forEach((lote) => {
+              inventario.lotes.find((lot) => lot.lote === lote.lote).cantidad -=
+                lote.cantidad;
+            });
+
+            inventario.piezas -= medicamento.piezas;
+            inventario.id_medicamento = inventario.id_medicamento._id;
+            medicamento.id_inventario = inventario._id;
+
+            const response = await updateInventario(
+              inventario._id,
+              inventario,
+              config
+            );
+          }
         });
 
-        // const response = await createPedido(this.pedido, config);
+        this.pedido.fecha_entrada = new Date(this.pedido.fecha_entrada);
+        if (this.pedido.fecha_salida) {
+          this.pedido.fecha_salida = new Date(this.pedido.fecha_salida);
+        }
 
-        // if (response.status === 201) {
-        //   Swal.fire("Exito", "Pedido creado", "success").then(() => {
-        //     this.pedido = {};
-        //     this.$router.push("/pedido");
-        //   });
-        // }
+        const response2 = await createPedido(this.pedido, config);
+
+        if (response2.status === 201) {
+          Swal.fire("Exito", "Pedido creado", "success").then(() => {
+            this.pedido = {};
+            this.$router.push("/pedido");
+          });
+        }
       } catch (error) {
         Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
         console.error(error);
@@ -289,7 +319,7 @@ export default defineComponent({
           precio_sugerido: 0,
           descuento: 0,
           precio_total: 0,
-          id_inventario: {
+          inventario: {
             _id: "",
             id_medicamento: {
               _id: "",
@@ -304,6 +334,7 @@ export default defineComponent({
             lotes: [],
             piezas: 0,
           },
+          id_inventario: "",
         });
       } catch (error) {
         console.error(error);
@@ -311,11 +342,11 @@ export default defineComponent({
     },
     async addLote(index: number) {
       try {
-        if (this.pedido.medicamentos[index].id_inventario.lotes === undefined) {
-          this.pedido.medicamentos[index].id_inventario.lotes = [];
+        if (this.pedido.medicamentos[index].inventario.lotes === undefined) {
+          this.pedido.medicamentos[index].inventario.lotes = [];
           this.newLotes = [null];
 
-          this.pedido.medicamentos[index].id_inventario.lotes.push({
+          this.pedido.medicamentos[index].inventario.lotes.push({
             fecha_vencimiento: new Date(),
             fecha_vencimiento_string: "",
             fecha_ingreso: new Date(),
@@ -325,7 +356,7 @@ export default defineComponent({
             observaciones: "",
           });
         } else {
-          this.pedido.medicamentos[index].id_inventario.lotes.push({
+          this.pedido.medicamentos[index].inventario.lotes.push({
             fecha_vencimiento: new Date(),
             fecha_vencimiento_string: "",
             fecha_ingreso: new Date(),
@@ -341,8 +372,15 @@ export default defineComponent({
         console.error(error);
       }
     },
+    deleteLote(index: number, indexLote: number) {
+      this.newLotes.splice(indexLote, 1);
+      this.pedido.medicamentos[index].inventario.lotes.splice(indexLote, 1);
+    },
+    deleteMedicamento(index: number) {
+      this.pedido.medicamentos.splice(index, 1);
+    },
     saveLote(index: number, indexLote: number) {
-      this.pedido.medicamentos[index].id_inventario.lotes[indexLote] =
+      this.pedido.medicamentos[index].inventario.lotes[indexLote] =
         this.newLotes[indexLote];
     },
   },

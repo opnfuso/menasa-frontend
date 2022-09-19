@@ -25,7 +25,10 @@
       <div class="card-body">
         <h2 class="card-title">Pedido # {{ index + 1 }}</h2>
         <p>Cliente: {{ pedido.cliente }}</p>
-        <p>Fecha de Entrada: {{ pedido.fecha_entrada.toLocaleString() }}</p>
+        <p>
+          Fecha de Entrada:
+          {{ pedido.fecha_entrada.toISOString().split("T")[0] }}
+        </p>
         <div class="card-actions">
           <button class="btn btn-primary">Editar</button>
         </div>
