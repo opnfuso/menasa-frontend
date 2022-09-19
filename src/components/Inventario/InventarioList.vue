@@ -66,9 +66,7 @@ export default defineComponent({
           },
         };
         const response = await getInventarios(config);
-        this.inventarios = response.data.filter((data) => {
-          return data.piezas > 0;
-        });
+        this.inventarios = response.data;
         this.filteredInventarios = this.inventarios;
         this.ordeningData();
         this.loading = false;
