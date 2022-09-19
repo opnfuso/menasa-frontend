@@ -57,10 +57,7 @@
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
-<<<<<<< HEAD
                   @change="setMedicamento(index)"
-=======
->>>>>>> 67c90871fa996ce6423da04b1dc59d05fec08377
                   v-model="pedido.medicamentos[index].id_inventario"
                   :options="multiselect"
                   :required="true"
@@ -117,16 +114,14 @@
             <div class="flex flex-col">
               <div class="grid grid-cols-7 gap-4">
                 <label class="mb-2 font-semibold">Lotes</label>
-                <button
-                  class="col-span-2 btn-circle btn-primary min-w-fit"
-                  @click="addLote()"
-                >
+                <div class="btn btn-info w-full" @click="addLote(index)">
                   Añadir
-                </button>
+                </div>
               </div>
               <div
                 class="grid grid-cols-3 gap-4"
-                v-for="(lote, indexLote) in nlotes"
+                v-for="(lote, indexLote) in pedido.medicamentos[index]
+                  .id_inventario.lotes"
                 :key="indexLote"
               >
                 <Multiselect
@@ -184,7 +179,7 @@ export default defineComponent({
       filteredStock: [] as Inventario[],
 
       nlotes: {} as number,
-      
+
       // descuento: {} as number,
       // precio_sugerido: {} as number,
       // precio_maximo: {} as number,
@@ -214,7 +209,7 @@ export default defineComponent({
           if (
             inventario.id_medicamento.hasInventory === true &&
             inventario.id_medicamento.disabled == false &&
-            inventario.lotes.length > 0&&
+            inventario.lotes.length > 0 &&
             inventario.piezas > 0
           ) {
             this.inventarios_with_lotes.push(inventario);
@@ -242,7 +237,6 @@ export default defineComponent({
         console.error(error);
       }
     },
-<<<<<<< HEAD
     setMedicamento(index: number) {
       console.log(this.pedido.medicamentos[index].id_inventario);
       this.loadLotes(this.pedido.medicamentos[index].id_inventario);
@@ -268,8 +262,6 @@ export default defineComponent({
       console.log(lote);
     },
 
-=======
->>>>>>> 67c90871fa996ce6423da04b1dc59d05fec08377
     // setMultiselectLotes(selectedMed: Inventario) {
     //   selectedMed.lotes.forEach((lote) => {
     //     const newMultiselectLote = {
@@ -309,6 +301,7 @@ export default defineComponent({
     },
     async addMedicamento() {
       try {
+
         if (this.pedido.medicamentos === undefined) {
           this.pedido.medicamentos = [];
         }
@@ -324,9 +317,19 @@ export default defineComponent({
         console.error(error);
       }
     },
-    async addLote() {
+    async addLote(index: number) {
       try {
-        this.nlotes++;
+        console.log(this.pedido.medicamentos[index]);
+        this.pedido.medicamentos[index].id_inventario.lotes.push({
+          fecha_vencimiento: new Date(),
+          fecha_vencimiento_string: "",
+          fecha_ingreso: new Date(),
+          fecha_ingreso_string: "",
+          cantidad: 0,
+          lote: "",
+          observaciones: "",
+        });
+        console.log(this.pedido.medicamentos[index].id_inventario.lotes);
       } catch (error) {
         console.error(error);
       }
