@@ -155,6 +155,7 @@ import Multiselect from "@vueform/multiselect";
 import type { Pedido, PedidoCreate } from "@/interfaces/pedido.interface";
 import { getPedido } from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
+import { getInventarios } from "@/services/inventario.service";
 
 export default defineComponent({
   name: "pedido-detail",
@@ -177,7 +178,6 @@ export default defineComponent({
       inventarios: [] as Inventario[],
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
-      pedido: {} as PedidoCreate,
       medicamentos: null,
     };
   },
