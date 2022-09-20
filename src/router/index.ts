@@ -89,6 +89,16 @@ const routes: RouteRecordRaw[] = [
     name: "historial",
     component: () => import("@/components/Historial.vue"),
   },
+  {
+    path: "/pedido/complete",
+    name: "pedido-complete-list",
+    component: () => import("@/components/Pedido/PedidosCompleteList.vue"),
+  },
+  {
+    path: "/pedido/complete/:id",
+    name: "pedido-detail-complete",
+    component: () => import("@/components/Pedido/PedidoDetailComplete.vue"),
+  },
 ];
 
 const router = createRouter({

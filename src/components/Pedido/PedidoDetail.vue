@@ -50,12 +50,17 @@
             <div class="mb-4 grid grid-cols-1 gap-4">
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
-                <Multiselect
+                <!-- <Multiselect
                   v-model="medicamentos"
                   @click="loadLotes(index)"
                   :options="multiselect"
                   :required="true"
                   :searchable="true"
+                /> -->
+                <input
+                  class="input w-full"
+                  v-model="pedido.medicamentos[index].precio_sugerido"
+                  disabled
                 />
               </div>
             </div>
@@ -212,7 +217,8 @@ export default defineComponent({
             lote.fecha_ingreso_string = date2.toISOString().split("T")[0];
           });
         });
-        console.log(this.pedido);
+    
+
       } catch (error) {
         console.error(error);
       }
