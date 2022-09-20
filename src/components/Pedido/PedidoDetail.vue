@@ -45,6 +45,121 @@
         <h2 class="text-2xl font-semibold mb-4">Medicamentos</h2>
         <div class="btn btn-info w-full" @click="addMedicamento()">Añadir</div>
         <div class="divider"></div>
+        <div v-for="(medicamento, index) in newMedicamentos" :key="index">
+          <div class="mb-4 grid grid-cols-1 gap-4">
+            <div class="mb-4 grid grid-cols-1 gap-4">
+              <div class="flex flex-col">
+                <label class="mb-2 font-semibold">Medicamento</label>
+                <Multiselect
+                  v-model="medicamento.inventario.id_medicamento.nombre"
+                  @click="loadLotes(index)"
+                  :options="multiselect"
+                  :required="true"
+                  :searchable="true"
+                />
+                <!-- <input
+                  class="input w-full"
+                  v-model="
+                    pedido.medicamentos[index].inventario.id_medicamento.nombre
+                  "
+                  disabled
+                /> -->
+              </div>
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Piezas</label>
+              <input
+                type="number"
+                class="input w-full"
+                v-model="newMedicamentos[index].piezas"
+                required
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Precio maximo</label>
+              <input
+                v-model="newMedicamentos[index].precio_maximo"
+                type="number"
+                class="input w-full"
+                required
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Precio sugerido</label>
+              <input
+                v-model="newMedicamentos[index].precio_sugerido"
+                type="number"
+                class="input w-full"
+                required
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Descuento</label>
+              <input
+                v-model="newMedicamentos[index].descuento"
+                type="number"
+                class="input w-full"
+                required
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="mb-2 font-semibold">Precio total</label>
+              <input
+                type="number"
+                class="input w-full"
+                v-model="newMedicamentos[index].precio_total"
+                required
+              />
+            </div>
+            <div class="flex flex-col">
+              <div class="grid grid-cols-7 gap-4">
+                <label class="mb-2 font-semibold">Lotes</label>
+                <div class="btn btn-info w-full" @click="addLote(index)">
+                  Añadir
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-3 gap-8 mt-5"
+                v-for="(lote, indexLote) in medicamento.inventario.lotes"
+                :key="indexLote"
+              >
+                <Multiselect
+                  @click="saveLote(index, indexLote)"
+                  v-model="newLotes[indexLote]"
+                  :options="multiselectLotes"
+                  :required="true"
+                  :searchable="true"
+                />
+                <!-- <input
+                  class="input w-full"
+                  v-model="
+                    pedido.medicamentos[index].inventario.lotes[indexLote].lote
+                  "
+                  disabled
+                /> -->
+                <input
+                  v-model="lote.cantidad"
+                  type="number"
+                  class="input w-full"
+                  required
+                />
+                <div
+                  @click="deleteNewLote(index, indexLote)"
+                  class="btn btn-error w-full"
+                >
+                  Eliminar
+                </div>
+              </div>
+            </div>
+            <div
+              @click="deleteNewMedicamento(index)"
+              class="btn btn-error w-full"
+            >
+              Eliminar
+            </div>
+          </div>
+          <div class="divider"></div>
+        </div>
         <div v-for="(medicamento, index) in pedido.medicamentos" :key="index">
           <div class="mb-4 grid grid-cols-1 gap-4">
             <div class="mb-4 grid grid-cols-1 gap-4">
@@ -166,7 +281,11 @@
 import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
-import type { Pedido, PedidoUpdate } from "@/interfaces/pedido.interface";
+import type {
+  Medicamento,
+  Pedido,
+  PedidoUpdate,
+} from "@/interfaces/pedido.interface";
 import { getPedido } from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
 import {
@@ -188,7 +307,6 @@ export default defineComponent({
       loading: true,
       fecha_entrada_string: {} as string,
       fecha_salida_string: {} as string,
-
       multiselect: [] as any,
       multiselectLotes: [] as any,
       lotes: [] as Lote[],
@@ -198,6 +316,7 @@ export default defineComponent({
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
       medicamentos: null,
+      newMedicamentos: [] as Medicamento[],
     };
   },
   methods: {
@@ -280,8 +399,8 @@ export default defineComponent({
     },
     loadLotes(index: number) {
       this.lotes = this.medicamentos.lotes;
-      this.pedido.medicamentos[index].inventario = this.medicamentos;
-      this.pedido.medicamentos[index].inventario.lotes = [];
+      this.newMedicamentos[index].inventario = this.medicamentos;
+      this.newMedicamentos[index].inventario.lotes = [];
       this.multiselectLotes = [];
       if (this.lotes.length > 0) {
         this.lotes.forEach((lote) => {
@@ -365,10 +484,10 @@ export default defineComponent({
     },
     async addMedicamento() {
       try {
-        if (this.pedido.medicamentos === undefined) {
-          this.pedido.medicamentos = [];
+        if (this.newMedicamentos === undefined) {
+          this.newMedicamentos = [];
         }
-        this.pedido.medicamentos.push({
+        this.newMedicamentos.push({
           piezas: 0,
           precio_maximo: 0,
           precio_sugerido: 0,
@@ -397,11 +516,11 @@ export default defineComponent({
     },
     async addLote(index: number) {
       try {
-        if (this.pedido.medicamentos[index].inventario.lotes === undefined) {
-          this.pedido.medicamentos[index].inventario.lotes = [];
+        if (this.newMedicamentos[index].inventario.lotes === undefined) {
+          this.newMedicamentos[index].inventario.lotes = [];
           this.newLotes = [null];
 
-          this.pedido.medicamentos[index].inventario.lotes.push({
+          this.newMedicamentos[index].inventario.lotes.push({
             fecha_vencimiento: new Date(),
             fecha_vencimiento_string: "",
             fecha_ingreso: new Date(),
@@ -411,7 +530,7 @@ export default defineComponent({
             observaciones: "",
           });
         } else {
-          this.pedido.medicamentos[index].inventario.lotes.push({
+          this.newMedicamentos[index].inventario.lotes.push({
             fecha_vencimiento: new Date(),
             fecha_vencimiento_string: "",
             fecha_ingreso: new Date(),
@@ -434,8 +553,15 @@ export default defineComponent({
     deleteMedicamento(index: number) {
       this.pedido.medicamentos.splice(index, 1);
     },
+    deleteNewLote(index: number, indexLote: number) {
+      this.newLotes.splice(indexLote, 1);
+      this.newMedicamentos[index].inventario.lotes.splice(indexLote, 1);
+    },
+    deleteNewMedicamento(index: number) {
+      this.newMedicamentos.splice(index, 1);
+    },
     saveLote(index: number, indexLote: number) {
-      this.pedido.medicamentos[index].inventario.lotes[indexLote] =
+      this.newMedicamentos[index].inventario.lotes[indexLote] =
         this.newLotes[indexLote];
     },
   },
