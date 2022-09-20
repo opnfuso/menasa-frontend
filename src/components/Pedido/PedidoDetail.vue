@@ -51,7 +51,7 @@
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <!-- <Multiselect
-                  v-model="medicamentos"
+                  v-model="medicamento.inventario.id_medicamento.nombre"
                   @click="loadLotes(index)"
                   :options="multiselect"
                   :required="true"
@@ -59,7 +59,7 @@
                 /> -->
                 <input
                   class="input w-full"
-                  v-model="pedido.medicamentos[index].precio_sugerido"
+                  v-model="pedido.medicamentos[index].inventario.id_medicamento.nombre"
                   disabled
                 />
               </div>
@@ -121,12 +121,17 @@
                 v-for="(lote, indexLote) in medicamento.inventario.lotes"
                 :key="indexLote"
               >
-                <Multiselect
+                <!-- <Multiselect
                   @click="saveLote(index, indexLote)"
                   v-model="newLotes[indexLote]"
                   :options="multiselectLotes"
                   :required="true"
                   :searchable="true"
+                /> -->
+                <input
+                  class="input w-full"
+                  v-model="pedido.medicamentos[index].inventario.lotes[indexLote].lote"
+                  disabled
                 />
                 <input
                   v-model="lote.cantidad"
