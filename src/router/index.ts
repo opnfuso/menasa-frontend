@@ -80,6 +80,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/components/Pedido/PedidoList.vue"),
   },
   {
+    path: "/pedido/:id",
+    name: "pedido-detail",
+    component: () => import("@/components/Pedido/PedidoDetail.vue"),
+  },
+  {
     path: "/historial",
     name: "historial",
     component: () => import("@/components/Historial.vue"),

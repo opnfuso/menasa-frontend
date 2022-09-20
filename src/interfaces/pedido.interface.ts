@@ -16,6 +16,7 @@ export interface Pedido {
   completado: boolean;
   fecha_salida: Date;
   fecha_entrada: Date;
+  medicamentosFaltantes: boolean;
   medicamentos: Medicamento[];
 }
 
@@ -25,6 +26,7 @@ export interface PedidoUpdate {
   completado: boolean;
   fecha_salida: Date;
   fecha_entrada: Date;
+  medicamentosFaltantes: boolean;
   medicamento: Medicamento[];
 }
 
@@ -41,5 +43,6 @@ export interface PedidoCreate {
   completado: boolean;
   fecha_salida: Date;
   fecha_entrada: Date;
+  medicamentosFaltantes: boolean;
   medicamentos: Medicamento[];
 }

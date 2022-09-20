@@ -29,8 +29,28 @@
           Fecha de Entrada:
           {{ pedido.fecha_entrada.toISOString().split("T")[0] }}
         </p>
+        <p v-if="pedido.fecha_salida < pedido.fecha_entrada">Fecha de salida:Pendiente</p>
+        <p v-else>
+          Fecha de salida:{{ pedido.fecha_salida.toISOString().split("T")[0] }}
+        </p>
+        <p v-if="pedido.medicamentosFaltantes === true">
+          Medicamentos Faltantes:Si
+        </p>
+        <p
+          v-else-if="
+            pedido.medicamentosFaltantes === false ||
+            pedido.medicamentosFaltantes == null
+          "
+        >
+          Medicamentos Faltantes:No
+        </p>
         <div class="card-actions">
-          <button class="btn btn-primary">Editar</button>
+          <button
+            class="btn btn-primary"
+            @click="$router.push(`/pedido/${pedido._id}`)"
+          >
+            Editar
+          </button>
         </div>
       </div>
     </div>
