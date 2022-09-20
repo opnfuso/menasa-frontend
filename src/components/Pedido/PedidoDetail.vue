@@ -59,7 +59,9 @@
                 /> -->
                 <input
                   class="input w-full"
-                  v-model="pedido.medicamentos[index].inventario.id_medicamento.nombre"
+                  v-model="
+                    pedido.medicamentos[index].inventario.id_medicamento.nombre
+                  "
                   disabled
                 />
               </div>
@@ -130,7 +132,9 @@
                 /> -->
                 <input
                   class="input w-full"
-                  v-model="pedido.medicamentos[index].inventario.lotes[indexLote].lote"
+                  v-model="
+                    pedido.medicamentos[index].inventario.lotes[indexLote].lote
+                  "
                   disabled
                 />
                 <input
@@ -162,10 +166,15 @@
 import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
-import type { Pedido, PedidoCreate } from "@/interfaces/pedido.interface";
+import type { Pedido, PedidoUpdate } from "@/interfaces/pedido.interface";
 import { getPedido } from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
-import { getInventarios } from "@/services/inventario.service";
+import {
+  getInventarios,
+  updateInventario,
+} from "@/services/inventario.service";
+import Swal from "sweetalert2";
+import { updatePedido } from "@/services/pedidos.service";
 
 export default defineComponent({
   name: "pedido-detail",
@@ -222,8 +231,6 @@ export default defineComponent({
             lote.fecha_ingreso_string = date2.toISOString().split("T")[0];
           });
         });
-    
-
       } catch (error) {
         console.error(error);
       }
@@ -294,7 +301,7 @@ export default defineComponent({
     },
     async savePedido() {
       try {
-        // console.log(this.pedido);
+        console.log(this.pedido);
         const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
@@ -333,7 +340,17 @@ export default defineComponent({
           this.pedido.fecha_salida = new Date(this.pedido.fecha_salida);
         }
 
-        const response2 = await createPedido(this.pedido, config);
+        this.pedido.medicamentos.forEach((med) => {
+          med.id_inventario = med.id_inventario._id;
+        });
+
+        console.log(this.pedido);
+
+        const response2 = await updatePedido(
+          this.pedido._id,
+          this.pedido,
+          config
+        );
 
         if (response2.status === 201) {
           Swal.fire("Exito", "Pedido creado", "success").then(() => {
@@ -342,7 +359,7 @@ export default defineComponent({
           });
         }
       } catch (error) {
-        Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
+        // Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
         console.error(error);
       }
     },

@@ -76,7 +76,7 @@ export default defineComponent({
         this.filteredStock = this.inventarios.sort((a, b) =>
           a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
         );
-        this.filteredStock.forEach((inventario)=>{
+        this.filteredStock.forEach((inventario) => {
           if (inventario.piezas > 0) {
             this.stock.push(inventario);
           }

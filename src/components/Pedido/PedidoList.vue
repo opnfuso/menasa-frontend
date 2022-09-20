@@ -29,7 +29,9 @@
           Fecha de Entrada:
           {{ pedido.fecha_entrada.toISOString().split("T")[0] }}
         </p>
-        <p v-if="pedido.fecha_salida < pedido.fecha_entrada">Fecha de salida:Pendiente</p>
+        <p v-if="pedido.fecha_salida < pedido.fecha_entrada">
+          Fecha de salida:Pendiente
+        </p>
         <p v-else>
           Fecha de salida:{{ pedido.fecha_salida.toISOString().split("T")[0] }}
         </p>
