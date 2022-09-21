@@ -51,9 +51,9 @@
               <div class="flex flex-col">
                 <label class="mb-2 font-semibold">Medicamento</label>
                 <Multiselect
-                  v-model="medicamentos"
+                  v-model="medicamentos[index]"
                   @click="loadLotes(index)"
-                  :options="multiselect"
+                  :options="multiselect[index]"
                   :required="true"
                   :searchable="true"
                 />
@@ -125,8 +125,8 @@
               >
                 <Multiselect
                   @click="saveLote(index, indexLote)"
-                  v-model="newLotes[indexLote]"
-                  :options="multiselectLotes"
+                  v-model="newLotes[index][indexLote]"
+                  :options="multiselectLotes[index]"
                   :required="true"
                   :searchable="true"
                 />
@@ -185,8 +185,9 @@ export default defineComponent({
       inventarios_with_lotes: [] as Inventario[],
       filteredStock: [] as Inventario[],
       pedido: {} as PedidoCreate,
-      medicamentos: null,
+      medicamentos: [],
       loading: true,
+      inventariosCount: 0,
     };
   },
   methods: {
@@ -200,6 +201,7 @@ export default defineComponent({
         };
         const response = await getInventarios(config);
         this.inventarios = response.data;
+        this.inventarios_with_lotes = [];
 
         this.inventarios.forEach((inventario) => {
           if (
@@ -222,41 +224,63 @@ export default defineComponent({
         this.filteredStock = this.inventarios_with_lotes.sort((a, b) =>
           a.id_medicamento.nombre.localeCompare(b.id_medicamento.nombre)
         );
-        this.filteredStock.forEach((inventario) => {
-          const newMultiselect = {
-            value: inventario,
-            label: inventario.id_medicamento.nombre,
-          };
-          this.multiselect.push(newMultiselect);
-        });
       } catch (error) {
         console.error(error);
       }
     },
     loadLotes(index: number) {
-      this.lotes = this.medicamentos.lotes;
-      this.pedido.medicamentos[index].inventario = this.medicamentos;
-      this.pedido.medicamentos[index].inventario.lotes = [];
-      this.multiselectLotes = [];
-      if (this.lotes.length > 0) {
-        this.lotes.forEach((lote) => {
-          const newMultiselectLote = {
-            value: lote,
-            label:
-              lote.lote +
-              " " +
-              lote.fecha_vencimiento_string +
-              "(" +
-              lote.cantidad +
-              ")",
-          };
-          this.multiselectLotes.push(newMultiselectLote);
-        });
+      if (this.medicamentos[index]) {
+        // Lotes del medicamento seleccionado: this.medicamentos[index].lotes)
+        // Selectores del multiselect para el medicamento seleccionado this.multiselectLotes[index]
+        // Inventario del medicamento seleccionado del pedido this.pedido.medicamentos[index].inventario
+
+        // this.lotes se utiliza para tener los lotes que se cargan del medicamento seleccionado
+        this.lotes[index] = this.medicamentos[index].lotes;
+        // el inventanrio del medicamento actual del pedido adquiere toda la informacion como el medicamento o el id
+        this.pedido.medicamentos[index].inventario = this.medicamentos[index];
+        // se eliminan los lotes para que el usuario seleccione los que va a usar
+        this.pedido.medicamentos[index].inventario.lotes = [];
+        // se reinicia los multiselectores de lotes
+        this.multiselectLotes[index] = [];
+
+        if (this.lotes[index].length > 0) {
+          this.lotes[index].forEach((lote) => {
+            const newMultiselectLote = {
+              value: lote,
+              label:
+                lote.lote +
+                " " +
+                lote.fecha_vencimiento_string +
+                "(" +
+                lote.cantidad +
+                ")",
+            };
+            this.multiselectLotes[index].push(newMultiselectLote);
+          });
+        }
       }
+      // this.lotes = this.medicamentos.lotes;
+      // this.pedido.medicamentos[index].inventario = this.medicamentos;
+      // this.pedido.medicamentos[index].inventario.lotes = [];
+      // this.multiselectLotes = [];
+      // if (this.lotes.length > 0) {
+      //   this.lotes.forEach((lote) => {
+      //     const newMultiselectLote = {
+      //       value: lote,
+      //       label:
+      //         lote.lote +
+      //         " " +
+      //         lote.fecha_vencimiento_string +
+      //         "(" +
+      //         lote.cantidad +
+      //         ")",
+      //     };
+      //     this.multiselectLotes.push(newMultiselectLote);
+      //   });
+      // }
     },
     async savePedido() {
       try {
-        // console.log(this.pedido);
         const token = await this.auth.currentUser?.getIdToken(true);
         const config = {
           headers: {
@@ -313,6 +337,9 @@ export default defineComponent({
         if (this.pedido.medicamentos === undefined) {
           this.pedido.medicamentos = [];
         }
+
+        await this.loadInventarios();
+
         this.pedido.medicamentos.push({
           piezas: 0,
           precio_maximo: 0,
@@ -336,6 +363,20 @@ export default defineComponent({
           },
           id_inventario: "",
         });
+
+        this.multiselect.push([]);
+        this.newLotes.push([]);
+        this.multiselectLotes.push([]);
+        this.lotes.push([]);
+
+        this.filteredStock.forEach((inventario) => {
+          const newMultiselect = {
+            value: inventario,
+            label: inventario.id_medicamento.nombre,
+          };
+          this.multiselect[this.inventariosCount].push(newMultiselect);
+        });
+        this.inventariosCount++;
       } catch (error) {
         console.error(error);
       }
@@ -344,7 +385,7 @@ export default defineComponent({
       try {
         if (this.pedido.medicamentos[index].inventario.lotes === undefined) {
           this.pedido.medicamentos[index].inventario.lotes = [];
-          this.newLotes = [null];
+          this.newLotes[index].push(null);
 
           this.pedido.medicamentos[index].inventario.lotes.push({
             fecha_vencimiento: new Date(),
@@ -366,7 +407,7 @@ export default defineComponent({
             observaciones: "",
           });
 
-          this.newLotes.push(null);
+          this.newLotes[index].push(null);
         }
       } catch (error) {
         console.error(error);
@@ -378,10 +419,17 @@ export default defineComponent({
     },
     deleteMedicamento(index: number) {
       this.pedido.medicamentos.splice(index, 1);
+      this.multiselect.splice(index, 1);
+      this.newLotes.splice(index, 1);
+      this.multiselectLotes.splice(index, 1);
+      this.lotes.splice(index, 1);
+      this.inventariosCount--;
     },
     saveLote(index: number, indexLote: number) {
-      this.pedido.medicamentos[index].inventario.lotes[indexLote] =
-        this.newLotes[indexLote];
+      if (this.newLotes[index][indexLote] !== null) {
+        this.pedido.medicamentos[index].inventario.lotes[indexLote] =
+          this.newLotes[index][indexLote];
+      }
     },
   },
   mounted() {
