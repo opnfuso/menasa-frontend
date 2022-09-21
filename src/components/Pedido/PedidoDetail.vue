@@ -314,7 +314,7 @@ import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
 import type { Medicamento, Pedido } from "@/interfaces/pedido.interface";
-import { getPedido } from "@/services/pedidos.service";
+import { getPedido, updatePedido } from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import Swal from "sweetalert2";
@@ -433,63 +433,60 @@ export default defineComponent({
           });
         });
 
-        console.log(this.pedido);
-        // const token = await this.auth.currentUser?.getIdToken(true);
-        // const config = {
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // };
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
 
         // const response = await getInventarios(config);
         // const inventarios = response.data;
 
-        // this.pedido.medicamentos.forEach(async (medicamento) => {
-        //   const inventario = inventarios.find(
-        //     (inventario) => inventario._id === medicamento.inventario._id
-        //   );
+        this.pedido.medicamentos.forEach(async (medicamento, index) => {
+          let piezas = 0;
+          medicamento.inventario.lotes.forEach((lote) => {
+            piezas += lote.cantidad;
+          });
 
-        //   if (inventario) {
-        //     medicamento.inventario.lotes.forEach((lote) => {
-        //       inventario.lotes.find((lot) => lot.lote === lote.lote).cantidad -=
-        //         lote.cantidad;
-        //     });
+          this.pedido.medicamentos[index].inventario.piezas = piezas;
+        });
 
-        //     inventario.piezas -= medicamento.piezas;
-        //     inventario.id_medicamento = inventario.id_medicamento._id;
-        //     medicamento.id_inventario = inventario._id;
+        this.pedido.fecha_entrada = new Date(this.pedido.fecha_entrada);
+        if (this.pedido.fecha_salida) {
+          this.pedido.fecha_salida = new Date(this.pedido.fecha_salida);
+        }
 
-        //     const response = await updateInventario(
-        //       inventario._id,
-        //       inventario,
-        //       config
-        //     );
-        //   }
-        // });
+        this.pedido.medicamentos.forEach((med, index) => {
+          const inv = this.inventarios.find(
+            (inventario) =>
+              inventario.id_medicamento._id ===
+              med.inventario.id_medicamento._id
+          );
 
-        // this.pedido.fecha_entrada = new Date(this.pedido.fecha_entrada);
-        // if (this.pedido.fecha_salida) {
-        //   this.pedido.fecha_salida = new Date(this.pedido.fecha_salida);
-        // }
+          this.pedido.medicamentos[index].id_inventario = inv?._id;
+        });
 
-        // this.pedido.medicamentos.forEach((med) => {
-        //   med.id_inventario = med.id_inventario._id;
-        // });
+        this.pedido.medicamentos.forEach((med) => {
+          if (typeof med.id_inventario !== "string") {
+            med.id_inventario = med.id_inventario._id;
+          }
+        });
 
-        // console.log(this.pedido);
+        console.log(this.pedido);
 
-        // const response2 = await updatePedido(
-        //   this.pedido._id,
-        //   this.pedido,
-        //   config
-        // );
+        const response2 = await updatePedido(
+          this.pedido._id,
+          this.pedido,
+          config
+        );
 
-        // if (response2.status === 201) {
-        //   Swal.fire("Exito", "Pedido creado", "success").then(() => {
-        //     this.pedido = {};
-        //     this.$router.push("/pedido");
-        //   });
-        // }
+        if (response2.status === 201) {
+          Swal.fire("Exito", "Pedido creado", "success").then(() => {
+            this.pedido = {};
+            this.$router.push("/pedido");
+          });
+        }
       } catch (error) {
         // Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
         console.error(error);

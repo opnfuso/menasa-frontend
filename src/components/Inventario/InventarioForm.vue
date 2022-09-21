@@ -203,7 +203,10 @@ export default defineComponent({
             },
           };
 
+          this.inventario.piezas = 0;
+
           this.inventario.lotes.forEach((lote) => {
+            this.inventario.piezas += lote.cantidad;
             lote.fecha_vencimiento = new Date(lote.fecha_vencimiento_string);
             lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
           });

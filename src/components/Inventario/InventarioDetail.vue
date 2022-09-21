@@ -144,7 +144,11 @@ import { getAuth, type Auth, type User } from "firebase/auth";
 export default defineComponent({
   name: "inventario-detail",
   data() {
-    return { auth: {} as Auth, inventario: {} as Inventario, loading: true };
+    return {
+      auth: {} as Auth,
+      inventario: {} as Inventario,
+      loading: true,
+    };
   },
   methods: {
     async loadInventario(id: string) {
@@ -186,17 +190,35 @@ export default defineComponent({
               lote.fecha_ingreso = new Date(lote.fecha_ingreso_string);
             });
 
-            const inventarioUpdate: InventarioUpdate = {
-              _id: this.inventario._id,
-              piezas: this.inventario.piezas,
-              lotes: this.inventario.lotes,
-              id_medicamento: this.inventario.id_medicamento._id,
-            };
             const token = await this.auth.currentUser?.getIdToken(true);
             const config = {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
+            };
+
+            const res = await getInventario(this.$route.params.id, config);
+            const inventario = res.data;
+
+            let total = 0;
+
+            this.inventario.lotes.forEach((lote) => {
+              total += lote.cantidad;
+            });
+
+            const dif = total - inventario.piezas;
+
+            if (this.inventario.piezas < 0) {
+              this.inventario.piezas += total;
+            } else {
+              this.inventario.piezas += dif;
+            }
+
+            const inventarioUpdate: InventarioUpdate = {
+              _id: this.inventario._id,
+              piezas: this.inventario.piezas,
+              lotes: this.inventario.lotes,
+              id_medicamento: this.inventario.id_medicamento._id,
             };
 
             const response = await updateInventario(
