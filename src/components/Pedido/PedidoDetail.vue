@@ -1,10 +1,13 @@
 <template>
   <main class="flex flex-col pt-6 pb-12 pr-12 pl-12">
     <form @submit.prevent="savePedido()">
-      <div class="grid grid-cols-7 gap-4">
+      <div class="grid grid-cols-9 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Pedido</h1>
         <button class="col-span-2 btn btn-success min-w-fit">Actualizar</button>
-        <div class="col-span-2 btn btn-error min-w-fit">Limpiar</div>
+        <div @click="handleDelete()" class="col-span-2 btn btn-error min-w-fit">
+          Borrar
+        </div>
+        <div class="col-span-2 btn btn-info min-w-fit">Limpiar</div>
       </div>
       <!-- Información -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -324,7 +327,11 @@ import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
 import type { Medicamento, Pedido } from "@/interfaces/pedido.interface";
-import { getPedido, updatePedido } from "@/services/pedidos.service";
+import {
+  getPedido,
+  updatePedido,
+  deletePedido,
+} from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import Swal from "sweetalert2";
@@ -497,6 +504,28 @@ export default defineComponent({
         // }
       } catch (error) {
         Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
+        console.error(error);
+      }
+    },
+    async handleDelete() {
+      try {
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await deletePedido(this.pedido._id, config);
+
+        if (response.status === 200) {
+          Swal.fire("Exito", "Pedido elminado", "success").then(() => {
+            this.pedido = {};
+            this.$router.push("/pedido");
+          });
+        }
+      } catch (error) {
+        Swal.fire("Error", "Error al Eliminar el pedido", "error");
         console.error(error);
       }
     },
