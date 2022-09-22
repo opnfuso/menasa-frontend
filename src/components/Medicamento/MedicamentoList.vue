@@ -223,9 +223,11 @@ export default defineComponent({
     },
     keypress() {
       this.filteredMedicamentos = this.medicamentos.filter((medicamentos) => {
-        return medicamentos.nombre
-          .toLowerCase()
-          .includes(this.filter.toLowerCase());
+        if(medicamentos.disabled === false){
+          return medicamentos.nombre
+            .toLowerCase()
+            .includes(this.filter.toLowerCase());
+        }
       });
     },
     async addMedicamento() {

@@ -8,7 +8,8 @@
       />
     </div>
     <div class="content-center">
-      <h1 class="text-7xl mt-4 text-center">Bienvenido</h1>
+      <h1 class="text-4xl mt-4 text-center">Medicinas Naturales y Saludables</h1>
+      <h1 class="text-6xl mt-4 text-center">Bienvenido</h1>
     </div>
   </div>
 </template>
