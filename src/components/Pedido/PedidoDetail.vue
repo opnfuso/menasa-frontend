@@ -7,7 +7,7 @@
         <div @click="handleDelete()" class="col-span-2 btn btn-error min-w-fit">
           Borrar
         </div>
-        <div class="col-span-2 btn btn-info min-w-fit">Limpiar</div>
+        <!-- <div class="col-span-2 btn btn-info min-w-fit">Limpiar</div> -->
       </div>
       <!-- Información -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
@@ -734,6 +734,9 @@ export default defineComponent({
           this.newLotes[index][indexLote];
       }
     },
+    // borrar(){
+    //   this.pedido = {};
+    // }
   },
   mounted() {
     const auth = getAuth();
