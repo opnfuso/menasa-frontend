@@ -496,12 +496,12 @@ export default defineComponent({
           config
         );
 
-        // if (response2.status === 200) {
-        //   Swal.fire("Exito", "Pedido editado", "success").then(() => {
-        //     this.pedido = {};
-        //     this.$router.push("/pedido");
-        //   });
-        // }
+        if (response2.status === 200) {
+          Swal.fire("Exito", "Pedido editado", "success").then(() => {
+            this.pedido = {};
+            this.$router.push("/pedido");
+          });
+        }
       } catch (error) {
         Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
         console.error(error);
