@@ -86,7 +86,7 @@ export default defineComponent({
       }
     },
     keypress() {
-      this.filteredStock = this.inventarios.filter((inventarios) => {
+      this.stock = this.inventarios.filter((inventarios) => {
         return inventarios.id_medicamento.nombre
           .toLowerCase()
           .includes(this.filter.toLowerCase());
