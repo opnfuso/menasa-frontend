@@ -33,9 +33,9 @@
         <div class="card-actions">
           <button
             class="btn btn-primary"
-            @click="$router.push(`/pedido/comlete/${pedido._id}`)"
+            @click="$router.push(`/pedido/complete/${pedido._id}`)"
           >
-            Editar
+            Ver
           </button>
         </div>
       </div>
