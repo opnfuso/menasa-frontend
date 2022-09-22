@@ -11,6 +11,16 @@
         <h2 class="text-2xl font-semibold mb-4">Información</h2>
         <div class="mb-4 grid grid-cols-1 gap-4">
           <div class="flex flex-col">
+            <label for="date" class="mb-2 font-semibold"
+              >Pedido completado</label
+            >
+            <input
+              type="checkbox"
+              class="checkbox"
+              v-model="pedido.completado"
+            />
+          </div>
+          <div class="flex flex-col">
             <label for="text" class="mb-2 font-semibold">Cliente</label>
             <input
               type="text"
@@ -473,22 +483,20 @@ export default defineComponent({
           }
         });
 
-        console.log(this.pedido);
-
         const response2 = await updatePedido(
           this.pedido._id,
           this.pedido,
           config
         );
 
-        if (response2.status === 201) {
-          Swal.fire("Exito", "Pedido creado", "success").then(() => {
-            this.pedido = {};
-            this.$router.push("/pedido");
-          });
-        }
+        // if (response2.status === 200) {
+        //   Swal.fire("Exito", "Pedido editado", "success").then(() => {
+        //     this.pedido = {};
+        //     this.$router.push("/pedido");
+        //   });
+        // }
       } catch (error) {
-        // Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
+        Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
         console.error(error);
       }
     },
@@ -607,17 +615,19 @@ export default defineComponent({
 
         if (this.lotes[index].length > 0) {
           this.lotes[index].forEach((lote) => {
-            const newMultiselectLote = {
-              value: lote,
-              label:
-                lote.lote +
-                " " +
-                lote.fecha_vencimiento_string +
-                "(" +
-                lote.cantidad +
-                ")",
-            };
-            this.multiselectLotes[index].push(newMultiselectLote);
+            if (lote.cantidad > 0) {
+              const newMultiselectLote = {
+                value: lote,
+                label:
+                  lote.lote +
+                  " " +
+                  lote.fecha_vencimiento_string +
+                  "(" +
+                  lote.cantidad +
+                  ")",
+              };
+              this.multiselectLotes[index].push(newMultiselectLote);
+            }
           });
         }
       }
@@ -648,17 +658,19 @@ export default defineComponent({
         this.newOldLotes.push([]);
 
         medicamento.id_inventario.lotes.forEach((lote) => {
-          const newMultiselectLote = {
-            value: lote,
-            label:
-              lote.lote +
-              " " +
-              lote.fecha_vencimiento_string +
-              "(" +
-              lote.cantidad +
-              ")",
-          };
-          this.multiselectOldLotes[index].push(newMultiselectLote);
+          if (lote.cantidad > 0) {
+            const newMultiselectLote = {
+              value: lote,
+              label:
+                lote.lote +
+                " " +
+                lote.fecha_vencimiento_string +
+                "(" +
+                lote.cantidad +
+                ")",
+            };
+            this.multiselectOldLotes[index].push(newMultiselectLote);
+          }
         });
       });
     },

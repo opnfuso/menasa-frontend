@@ -276,7 +276,7 @@ export default defineComponent({
       .then(async (user) => {
         this.auth = auth;
         this.loading = false;
-        this.loadLocal();
+        // this.loadLocal();
 
         await this.listMedicamentos();
       })
