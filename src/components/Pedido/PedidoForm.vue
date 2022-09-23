@@ -245,17 +245,19 @@ export default defineComponent({
 
         if (this.lotes[index].length > 0) {
           this.lotes[index].forEach((lote) => {
-            const newMultiselectLote = {
-              value: lote,
-              label:
-                lote.lote +
-                " " +
-                lote.fecha_vencimiento_string +
-                "(" +
-                lote.cantidad +
-                ")",
-            };
-            this.multiselectLotes[index].push(newMultiselectLote);
+            if (lote.cantidad > 0) {
+              const newMultiselectLote = {
+                value: lote,
+                label:
+                  lote.lote +
+                  " " +
+                  lote.fecha_vencimiento_string +
+                  "(" +
+                  lote.cantidad +
+                  ")",
+              };
+              this.multiselectLotes[index].push(newMultiselectLote);
+            }
           });
         }
       }

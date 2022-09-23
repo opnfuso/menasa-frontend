@@ -1,15 +1,28 @@
 <template>
   <main class="flex flex-col pt-6 pb-12 pr-12 pl-12">
     <form @submit.prevent="savePedido()">
-      <div class="grid grid-cols-7 gap-4">
+      <div class="grid grid-cols-9 gap-4">
         <h1 class="col-span-3 text-3xl font-bold mb-8">Pedido</h1>
         <button class="col-span-2 btn btn-success min-w-fit">Actualizar</button>
-        <div class="col-span-2 btn btn-error min-w-fit">Limpiar</div>
+        <div @click="handleDelete()" class="col-span-2 btn btn-error min-w-fit">
+          Borrar
+        </div>
+        <!-- <div class="col-span-2 btn btn-info min-w-fit">Limpiar</div> -->
       </div>
       <!-- Información -->
       <div class="w-full rounded-xl bg-base-300 p-4 mb-8 shadow-2xl/40">
         <h2 class="text-2xl font-semibold mb-4">Información</h2>
         <div class="mb-4 grid grid-cols-1 gap-4">
+          <div class="flex flex-col">
+            <label for="date" class="mb-2 font-semibold"
+              >Pedido completado</label
+            >
+            <input
+              type="checkbox"
+              class="checkbox"
+              v-model="pedido.completado"
+            />
+          </div>
           <div class="flex flex-col">
             <label for="text" class="mb-2 font-semibold">Cliente</label>
             <input
@@ -314,7 +327,11 @@ import { getAuth, type Auth, type User } from "@firebase/auth";
 import { defineComponent } from "vue";
 import Multiselect from "@vueform/multiselect";
 import type { Medicamento, Pedido } from "@/interfaces/pedido.interface";
-import { getPedido, updatePedido } from "@/services/pedidos.service";
+import {
+  getPedido,
+  updatePedido,
+  deletePedido,
+} from "@/services/pedidos.service";
 import type { Inventario, Lote } from "@/interfaces/inventario.interface";
 import { getInventarios } from "@/services/inventario.service";
 import Swal from "sweetalert2";
@@ -473,22 +490,42 @@ export default defineComponent({
           }
         });
 
-        console.log(this.pedido);
-
         const response2 = await updatePedido(
           this.pedido._id,
           this.pedido,
           config
         );
 
-        if (response2.status === 201) {
-          Swal.fire("Exito", "Pedido creado", "success").then(() => {
+        if (response2.status === 200) {
+          Swal.fire("Exito", "Pedido editado", "success").then(() => {
             this.pedido = {};
             this.$router.push("/pedido");
           });
         }
       } catch (error) {
-        // Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
+        Swal.fire("Error", "Error al Guardar o Actualizar el pedido", "error");
+        console.error(error);
+      }
+    },
+    async handleDelete() {
+      try {
+        const token = await this.auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await deletePedido(this.pedido._id, config);
+
+        if (response.status === 200) {
+          Swal.fire("Exito", "Pedido elminado", "success").then(() => {
+            this.pedido = {};
+            this.$router.push("/pedido");
+          });
+        }
+      } catch (error) {
+        Swal.fire("Error", "Error al Eliminar el pedido", "error");
         console.error(error);
       }
     },
@@ -607,17 +644,19 @@ export default defineComponent({
 
         if (this.lotes[index].length > 0) {
           this.lotes[index].forEach((lote) => {
-            const newMultiselectLote = {
-              value: lote,
-              label:
-                lote.lote +
-                " " +
-                lote.fecha_vencimiento_string +
-                "(" +
-                lote.cantidad +
-                ")",
-            };
-            this.multiselectLotes[index].push(newMultiselectLote);
+            if (lote.cantidad > 0) {
+              const newMultiselectLote = {
+                value: lote,
+                label:
+                  lote.lote +
+                  " " +
+                  lote.fecha_vencimiento_string +
+                  "(" +
+                  lote.cantidad +
+                  ")",
+              };
+              this.multiselectLotes[index].push(newMultiselectLote);
+            }
           });
         }
       }
@@ -648,17 +687,19 @@ export default defineComponent({
         this.newOldLotes.push([]);
 
         medicamento.id_inventario.lotes.forEach((lote) => {
-          const newMultiselectLote = {
-            value: lote,
-            label:
-              lote.lote +
-              " " +
-              lote.fecha_vencimiento_string +
-              "(" +
-              lote.cantidad +
-              ")",
-          };
-          this.multiselectOldLotes[index].push(newMultiselectLote);
+          if (lote.cantidad > 0) {
+            const newMultiselectLote = {
+              value: lote,
+              label:
+                lote.lote +
+                " " +
+                lote.fecha_vencimiento_string +
+                "(" +
+                lote.cantidad +
+                ")",
+            };
+            this.multiselectOldLotes[index].push(newMultiselectLote);
+          }
         });
       });
     },
@@ -693,6 +734,9 @@ export default defineComponent({
           this.newLotes[index][indexLote];
       }
     },
+    // borrar(){
+    //   this.pedido = {};
+    // }
   },
   mounted() {
     const auth = getAuth();

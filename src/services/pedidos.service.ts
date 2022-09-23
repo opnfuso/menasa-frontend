@@ -28,3 +28,9 @@ export const createPedido = async (
   config: AxiosRequestConfig
 ): Promise<AxiosResponse<Pedido>> =>
   await axios.post("/pedidos", pedido, config);
+
+export const deletePedido = async (
+  id: string,
+  config: AxiosRequestConfig
+): Promise<AxiosResponse<Pedido>> =>
+  await axios.delete(`/pedidos/${id}`, config);
