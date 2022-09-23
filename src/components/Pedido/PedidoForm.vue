@@ -259,25 +259,11 @@ export default defineComponent({
           });
         }
       }
-      // this.lotes = this.medicamentos.lotes;
-      // this.pedido.medicamentos[index].inventario = this.medicamentos;
-      // this.pedido.medicamentos[index].inventario.lotes = [];
-      // this.multiselectLotes = [];
-      // if (this.lotes.length > 0) {
-      //   this.lotes.forEach((lote) => {
-      //     const newMultiselectLote = {
-      //       value: lote,
-      //       label:
-      //         lote.lote +
-      //         " " +
-      //         lote.fecha_vencimiento_string +
-      //         "(" +
-      //         lote.cantidad +
-      //         ")",
-      //     };
-      //     this.multiselectLotes.push(newMultiselectLote);
-      //   });
-      // }
+      if(this.medicamentos[index]){
+        this.setPrecioMaximo(index);
+        
+      }
+
     },
     async savePedido() {
       try {
@@ -430,6 +416,12 @@ export default defineComponent({
         this.pedido.medicamentos[index].inventario.lotes[indexLote] =
           this.newLotes[index][indexLote];
       }
+    },
+    setPrecioMaximo(index: number){
+      let med : Inventario={};
+      med = this.medicamentos[index];
+      this.pedido.medicamentos[index].precio_maximo = med.id_medicamento.precio;
+      
     },
   },
   mounted() {
