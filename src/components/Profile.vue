@@ -38,6 +38,15 @@
             />
           </div>
           <div class="flex flex-col">
+            <label class="mb-2 font-semibold">Nueva contraseña</label>
+            <input
+              type="password"
+              class="input w-full"
+              v-model="perfil.password"
+              required
+            />
+          </div>
+          <div class="flex flex-col">
             <label class="mb-2 font-semibold">Foto de perfil</label>
             <!-- <div @click="previewImage()" class="btn btn-info max-w-fit mb-4">
               Elegir imagen
@@ -84,7 +93,7 @@ export default defineComponent({
     return {
       auth: {} as Auth,
       loading: true,
-      perfil: {} as User,
+      perfil: {} as UserUpdate,
       image: "",
       imageObject: {} as File,
       app: {} as FirebaseApp,
@@ -130,6 +139,7 @@ export default defineComponent({
               email: this.perfil.email,
               displayName: this.perfil.displayName,
               phoneNumber: this.perfil.phoneNumber,
+              password: this.perfil.password,
             };
 
             if (this.imageObject.size > 0) {

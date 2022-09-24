@@ -51,4 +51,5 @@ export interface UserUpdate {
   photoURL?: string;
   isAdmin?: boolean;
   disabled?: boolean;
+  password?: string;
 }

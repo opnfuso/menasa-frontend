@@ -38,6 +38,15 @@
               required
             />
           </div>
+          <div class="flex flex-col">
+            <label class="mb-2 font-semibold">Nueva contraseña</label>
+            <input
+              type="password"
+              class="input w-full"
+              v-model="userUpdate.password"
+              required
+            />
+          </div>
           <div class="flex flex-col justify-start">
             <label class="mb-2 font-semibold">Es Admin</label>
             <input
@@ -134,6 +143,7 @@ export default defineComponent({
               displayName: this.userUpdate.displayName,
               phoneNumber: this.userUpdate.phoneNumber,
               isAdmin: this.userUpdate.isAdmin,
+              password: this.userUpdate.password,
             };
 
             if (this.imageObject.size > 0) {
