@@ -70,7 +70,7 @@
         <h2 class="text-2xl font-semibold mb-4">Lotes</h2>
         <div @click="addLote()" class="btn btn-info w-full mb-2">Añadir</div>
         <div v-for="(lote, index) in inventario.lotes" :key="index">
-          <div v-if="lote.cantidad > 0">
+          <div v-if="lote.cantidad > 0 || lote.lote.length === 0">
             <h3 class="text-xl mb-4 font-semibold">Lote : {{ lote.lote }}</h3>
             <div class="mb-4 grid grid-cols-1 gap-4">
               <div class="flex flex-col">
@@ -254,6 +254,7 @@ export default defineComponent({
       if (this.inventario.lotes === undefined) {
         this.inventario.lotes = [];
       }
+      console.log(this.inventario.lotes);
 
       const item = {
         cantidad: 0,
